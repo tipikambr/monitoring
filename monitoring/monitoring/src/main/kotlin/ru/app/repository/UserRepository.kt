@@ -34,6 +34,8 @@ interface UserRepository : CrudRepository<User, String> {
         @Param("hours") hours: Int?,
         @Param("permissions") permissions: String,
         @Param("boss_id") boss_id: Long?
-
     )
+
+    @Query("SELECT * FROM users WHERE boss_id = :user_id")
+    fun getWorkers(@Param("user_id") user_id: Long): List<User>
 }

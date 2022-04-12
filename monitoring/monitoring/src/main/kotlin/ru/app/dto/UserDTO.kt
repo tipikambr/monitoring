@@ -1,6 +1,7 @@
 package ru.app.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import ru.app.model.User
 
 data class UserDTO(
     @JsonProperty("user_name") val user_name: String?,

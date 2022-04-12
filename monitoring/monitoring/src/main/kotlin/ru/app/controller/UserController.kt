@@ -36,10 +36,12 @@ class UserController(
     @PostMapping("/api/v1/register")
     fun register(@RequestBody userDTO: UserDTO): Token {
         var registeredUser = userService.getUser(userDTO.login!!)
+
         if (registeredUser == null) {
             registeredUser = userService.register(userDTO)
             return tokenService.generateToken(registeredUser.user_id!!, registeredUser.login, userDTO.password!!)
         }
+
         throw UserAlreadyExistsException()
     }
 
@@ -48,12 +50,14 @@ class UserController(
         val login = loginPassword.login
         val user = userService.getUser(login!!) ?: throw UserNotFoundException()
         val password = passwordHash(loginPassword.password!!)
+
         if (user.password == password) {
             val token = tokenService.checkToken(user.user_id!!)
             if (token != null)
                 return token
             return tokenService.generateToken(user.user_id!!, user.login, user.password)
         }
+
         throw UserAccessException()
     }
 
@@ -62,11 +66,13 @@ class UserController(
         val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         val interest = userService.getUser(user.login ?: throw UserNotFoundException())
         val me = userService.getUser(myID)
+
         if (me!!.permissions == "admin" || (interest != null && userService.isBoss(me.user_id!!, interest!!.user_id!!))){
             if (interest == null) throw UserNotFoundException()
             userService.deleteUser(interest.login)
             return "OK"
         }
+
         throw PermissionDeniedException()
     }
 
@@ -75,6 +81,7 @@ class UserController(
         val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         val interest = if (user.login != null) userService.getUser(user.login) else  userService.getUser(myID)
         val me = userService.getUser(myID)
+
         if (me!!.permissions == "admin" || (interest != null && userService.isBoss(me.user_id!!, interest!!.user_id!!))){
             if (interest == null) throw UserNotFoundException()
             userService.updateUser(
@@ -91,6 +98,13 @@ class UserController(
             )
             return "OK"
         }
+
         throw PermissionDeniedException()
+    }
+
+    @GetMapping("/api/v1/getWorkers")
+    fun getWorkers(@RequestParam token: String): List<UserDTO> {
+        val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        return userService.getWorkers(myID)
     }
 }

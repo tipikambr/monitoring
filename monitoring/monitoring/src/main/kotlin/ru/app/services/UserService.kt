@@ -127,4 +127,22 @@ class UserService(
     fun getCompanyByName(name: String): Company {
         return companyRepository?.getUserCompanyByName(name) ?: throw CompanyNotExistsException()
     }
+
+    fun getWorkers(user_id: Long): List<UserDTO> {
+        return userRepository.getWorkers(user_id).map {
+            val comnany_name = companyRepository.getUserCompanyById(it.company_id!!)?.company_name ?: throw CompanyNotExistsException()
+            var bossLogin: String? = null
+            if (it.boss_id != null)
+                bossLogin = userRepository.getUser(it.boss_id)?.login ?: throw BossNotFoundException()
+            UserDTO(
+                it.user_name,
+                it.login,
+                it.password,
+                comnany_name,
+                it.hours,
+                it.permissions,
+                bossLogin
+            )
+        }
+    }
 }

@@ -12,4 +12,5 @@ VALUES
     (3, 'test1', 'test', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 1, 8, 'admin', 1),
     (4, 'test1', 'test1', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 1, 8, 'user', 3),
     (5, 'test2', 'test2', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 1, 8, 'user', 4),
-    (6, 'test3', 'test3', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 2)
+    (6, 'test3', 'test3', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 2),
+    (7, 'test4', 'test4', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 1)
