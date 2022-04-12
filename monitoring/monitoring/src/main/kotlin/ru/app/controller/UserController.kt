@@ -73,7 +73,7 @@ class UserController(
     @PostMapping("/api/v1/update/user")
     fun update(@RequestParam token: String, @RequestBody user: UserDTO): String {
         val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
-        val interest = userService.getUser(user.login ?: throw UserNotFoundException())
+        val interest = if (user.login != null) userService.getUser(user.login) else  userService.getUser(myID)
         val me = userService.getUser(myID)
         if (me!!.permissions == "admin" || (interest != null && userService.isBoss(me.user_id!!, interest!!.user_id!!))){
             if (interest == null) throw UserNotFoundException()
