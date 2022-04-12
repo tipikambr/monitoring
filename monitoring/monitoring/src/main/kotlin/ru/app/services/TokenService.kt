@@ -12,7 +12,7 @@ class TokenService(private val tokenRepository: TokenRepository) {
         val token = hashString("SHA-224", login + password + Date())
         val refresh_token = hashString("SHA-256", login + password + Date())
         tokenRepository.addToken(id, token, refresh_token, null)
-        return Token(id, token, null, refresh_token)
+        return Token(id, token, null, refresh_token, null)
 
     }
 

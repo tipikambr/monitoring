@@ -18,7 +18,7 @@ create table project
     project_name        text,
     project_description text,
     PRIMARY KEY (project_id)
-)
+);
 
 create table task
 (
@@ -55,9 +55,10 @@ create table company
 
 create table tokens
 (
-    user_id       bigint,
-    token         text,
-    token_endtime timestamp,
-    refresh_token text,
+    user_id               bigint,
+    token                 text,
+    token_endtime         timestamp,
+    refresh_token         text,
+    refresh_token_endtime timestamp,
     PRIMARY KEY (user_id)
 )

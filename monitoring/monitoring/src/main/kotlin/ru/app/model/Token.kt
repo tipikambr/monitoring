@@ -15,5 +15,6 @@ data class Token (
     @JsonProperty("user_id") val user_id: Long?,
     @JsonProperty("token") val token: String?,
     @JsonProperty("token_endtime") val token_endtime: Timestamp?,
-    @JsonProperty("refresh_token") val refresh_token: String?
+    @JsonProperty("refresh_token") val refresh_token: String?,
+    @JsonProperty("refresh_token_endtime") val refresh_token_endtime: Timestamp?
 )
