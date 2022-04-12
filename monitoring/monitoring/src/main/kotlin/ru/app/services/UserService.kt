@@ -4,14 +4,11 @@ import org.springframework.stereotype.Service
 import ru.app.dto.UserDTO
 import ru.app.exceptions.*
 import ru.app.model.Company
-import ru.app.model.Token
 import ru.app.model.User
 import ru.app.repository.CompanyRepository
 import ru.app.repository.TokenRepository
 import ru.app.repository.UserRepository
-import ru.app.utils.hashString
 import ru.app.utils.passwordHash
-import java.util.Date
 
 @Service
 class UserService(
@@ -57,16 +54,16 @@ class UserService(
 
     fun getUserDTO(id: Long): UserDTO? {
         val user = userRepository.getUser(id) ?: return null
-        val comnany_name = companyRepository.getUserCompanyById(user.company_id!!)?.company_name ?: throw CompanyNotExistsException()
+        val companyName = companyRepository.getUserCompanyById(user.company_id!!)?.company_name ?: throw CompanyNotExistsException()
         var bossLogin: String? = null
-        if (user.boss_id != null)
+        if (user.boss_id != null && user.boss_id != 0L)
             bossLogin = userRepository.getUser(user.boss_id)?.login ?: throw BossNotFoundException()
 
         return UserDTO(
             user.user_name,
             user.login,
             user.password,
-            comnany_name,
+            companyName,
             user.hours,
             user.permissions,
             bossLogin
