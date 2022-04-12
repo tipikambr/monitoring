@@ -107,4 +107,16 @@ class UserController(
         val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         return userService.getWorkers(myID)
     }
+
+    @PostMapping("/api/v1/getWorkers")
+    fun getWorkers(@RequestParam token: String, @RequestBody boss: UserDTO): List<UserDTO> {
+        val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val me = userService.getUser(myId)
+        val interest = userService.getUser(boss.login!!)
+        if (me!!.permissions == "admin" || (interest != null && userService.isBoss(me.user_id!!, interest!!.user_id!!))){
+            if (interest == null) throw UserNotFoundException()
+            return userService.getWorkers(interest.user_id!!)
+        }
+        throw PermissionDeniedException()
+    }
 }
