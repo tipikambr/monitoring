@@ -3,6 +3,7 @@ package ru.app.services
 import org.springframework.stereotype.Service
 import ru.app.dto.UserDTO
 import ru.app.exceptions.*
+import ru.app.model.Company
 import ru.app.model.Token
 import ru.app.model.User
 import ru.app.repository.CompanyRepository
@@ -14,9 +15,9 @@ import java.util.Date
 
 @Service
 class UserService(
-    val userRepository: UserRepository,
-    val companyRepository: CompanyRepository,
-    val tokenRepository: TokenRepository
+    private val userRepository: UserRepository,
+    private val companyRepository: CompanyRepository,
+    private val tokenRepository: TokenRepository
 ) {
     fun getUser(login: String): User? = userRepository.getUser(login)
 
@@ -109,19 +110,21 @@ class UserService(
         userRepository.deleteByLogin(login)
     }
 
-    fun generateToken(id: Long, login: String, password: String) : Token {
-        val token = hashString("SHA-224", login + password + Date())
-        val refresh_token = hashString("SHA-256", login + password + Date())
-        tokenRepository.addToken(id, token, refresh_token, null)
-        return Token(id, token, null, refresh_token)
-
+    fun updateUser(user: User) {
+        userRepository.getUser(user.login)?.user_id ?: throw UserNotFoundException()
+        userRepository.updateUser(
+            user.user_id!!,
+            user.user_name!!,
+            user.login,
+            user.password,
+            user.company_id!!,
+            user.hours,
+            user.permissions!!,
+            user.boss_id
+        )
     }
 
-    fun checkToken(token: String) : Long? {
-        return tokenRepository.checkToken(token)?.user_id
-    }
-
-    fun checkToken(id: Long) : Token? {
-        return tokenRepository.checkToken(id)
+    fun getCompanyByName(name: String): Company {
+        return companyRepository?.getUserCompanyByName(name) ?: throw CompanyNotExistsException()
     }
 }

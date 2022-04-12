@@ -22,4 +22,18 @@ interface UserRepository : CrudRepository<User, String> {
 
     @Query("SELECT COUNT(*) FROM users WHERE boss_id = :boss_id")
     fun hasWorkers(@Param("boss_id") id: Long): Int
+
+    @Modifying
+    @Query("UPDATE users SET user_name = :user_name, login = :login, password = :password, company_id = :company_id, hours = :hours, permissions = :permissions, boss_id = :boss_id WHERE user_id = :user_id")
+    fun updateUser(
+        @Param("user_id") user_id : Long,
+        @Param("user_name") user_name: String,
+        @Param("login") login: String,
+        @Param("password") password: String,
+        @Param("company_id") company_id: Int,
+        @Param("hours") hours: Int?,
+        @Param("permissions") permissions: String,
+        @Param("boss_id") boss_id: Long?
+
+    )
 }
