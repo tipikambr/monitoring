@@ -37,12 +37,12 @@ class UserController(
         throw PermissionDeniedException()
     }
 
-    @PostMapping("/api/v1/register")
+    @PostMapping("/api/v1/register/user")
     fun register(@RequestParam token: String, @RequestBody userDTO: UserDTO): Token {
         log.info("POST: /api/v1/register")
         val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         val me = userService.getUser(myId)
-        if (me!!.permissions == "admin" || me!!.permissions == "manager") {
+        if (me!!.permissions == "admin" || me.permissions == "manager") {
             var registeredUser = userService.getUser(userDTO.login!!)
 
             if (registeredUser == null) {
@@ -67,7 +67,7 @@ class UserController(
             val token = tokenService.checkToken(user.user_id!!)
             if (token != null)
                 return token
-            return tokenService.generateToken(user.user_id!!, user.login, user.password)
+            return tokenService.generateToken(user.user_id, user.login, user.password)
         }
 
         throw LoginPasswordException()

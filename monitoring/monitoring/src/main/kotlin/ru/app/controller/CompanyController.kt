@@ -2,9 +2,12 @@ package ru.app.controller
 
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.app.dto.UserDTO
+import ru.app.exceptions.PermissionDeniedException
 import ru.app.exceptions.UnauthorizedAccessException
 import ru.app.exceptions.UserNotFoundException
 import ru.app.model.Company
@@ -26,5 +29,16 @@ class CompanyController(
         val userId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         val me = userService.getUser(userId)!!
         return companyService.getCompanyById(me.company_id!!)
+    }
+
+    @PostMapping("/api/v1/register/company")
+    fun register(@RequestParam token: String, @RequestBody company: Company): String {
+        log.info("POST: /api/v1/register/company")
+        val userId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin") throw PermissionDeniedException()
+
+        companyService.createCompany(company)
+        return "OK"
     }
 }

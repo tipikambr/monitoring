@@ -13,8 +13,7 @@ import ru.app.utils.passwordHash
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val companyRepository: CompanyRepository,
-    private val tokenRepository: TokenRepository
+    private val companyRepository: CompanyRepository
 ) {
     fun getUser(login: String): User? = userRepository.getUser(login)
 
