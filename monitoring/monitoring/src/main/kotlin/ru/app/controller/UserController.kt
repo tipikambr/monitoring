@@ -17,14 +17,14 @@ class UserController(
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    @GetMapping("/api/v1/info")
+    @GetMapping("/api/v1/info/user")
     fun info(@RequestParam token: String): UserDTO {
         log.info("GET: /api/v1/info")
         val id = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         return userService.getUserDTO(id) ?: throw UserNotFoundException()
     }
 
-    @PostMapping("/api/v1/info")
+    @PostMapping("/api/v1/info/user")
     fun info(@RequestParam token: String, @RequestBody user: UserDTO): UserDTO {
         log.info("POST: /api/v1/info")
         val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
@@ -52,7 +52,7 @@ class UserController(
 
             throw UserAlreadyExistsException()
         }
-        throw UserAccessException()
+        throw PermissionDeniedException()
     }
 
     @PostMapping("/api/v1/login")
@@ -70,7 +70,7 @@ class UserController(
             return tokenService.generateToken(user.user_id!!, user.login, user.password)
         }
 
-        throw UserAccessException()
+        throw LoginPasswordException()
     }
 
     @PostMapping("/api/v1/delete/user")
