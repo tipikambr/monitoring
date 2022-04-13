@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import ru.app.dto.UserDTO
+import ru.app.exceptions.CompanyNotExistsException
 import ru.app.exceptions.PermissionDeniedException
 import ru.app.exceptions.TokenExpiredException
 import ru.app.model.Company
@@ -73,5 +75,31 @@ class CompanyController(
         val company = companyService.getCompanyByName(name.company_name)
         companyService.deleteCompany(company)
         return "OK"
+    }
+
+    @GetMapping("/api/v1/workersOfCompany")
+    fun getUsersOfCompany(@RequestParam token: String): List<UserDTO> {
+        log.info("GET: /api/v1/workersOfCompany")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+
+        return getUsersOfCompany(me.company_id ?: throw CompanyNotExistsException())
+    }
+
+    @PostMapping("/api/v1/workersOfCompany")
+    fun getUsersOfCompany(@RequestParam token: String, @RequestBody name: Company): List<UserDTO> {
+        log.info("GET: /api/v1/workersOfCompany")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin") throw PermissionDeniedException()
+        val company = companyService.getCompanyByName(name.company_name)
+
+        return getUsersOfCompany(company.company_id ?: throw CompanyNotExistsException())
+    }
+
+    fun getUsersOfCompany(company_id: Int): List<UserDTO> {
+        return userService.getUsersByCompany(company_id)
     }
 }

@@ -38,4 +38,7 @@ interface UserRepository : CrudRepository<User, String> {
 
     @Query("SELECT * FROM users WHERE boss_id = :user_id")
     fun getWorkers(@Param("user_id") user_id: Long): List<User>
+
+    @Query("SELECT * FROM users WHERE company_id = :companyId")
+    fun getUsersByCompany(companyId: Int): List<User>
 }
