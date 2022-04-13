@@ -38,17 +38,21 @@ class UserController(
     }
 
     @PostMapping("/api/v1/register")
-    fun register(@RequestBody userDTO: UserDTO): Token {
+    fun register(@RequestParam token: String, @RequestBody userDTO: UserDTO): Token {
         log.info("POST: /api/v1/register")
+        val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val me = userService.getUser(myId)
+        if (me!!.permissions == "admin" || me!!.permissions == "manager") {
+            var registeredUser = userService.getUser(userDTO.login!!)
 
-        var registeredUser = userService.getUser(userDTO.login!!)
+            if (registeredUser == null) {
+                registeredUser = userService.register(userDTO)
+                return tokenService.generateToken(registeredUser.user_id!!, registeredUser.login, userDTO.password!!)
+            }
 
-        if (registeredUser == null) {
-            registeredUser = userService.register(userDTO)
-            return tokenService.generateToken(registeredUser.user_id!!, registeredUser.login, userDTO.password!!)
+            throw UserAlreadyExistsException()
         }
-
-        throw UserAlreadyExistsException()
+        throw UserAccessException()
     }
 
     @PostMapping("/api/v1/login")
