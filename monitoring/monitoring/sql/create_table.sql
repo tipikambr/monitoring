@@ -61,4 +61,10 @@ create table tokens
     refresh_token         text,
     refresh_token_endtime timestamp,
     PRIMARY KEY (user_id)
+);
+
+create table projects_users
+(
+    user_id    bigint,
+    project_id bigint
 )
