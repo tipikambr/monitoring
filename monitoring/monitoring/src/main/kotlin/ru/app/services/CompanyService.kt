@@ -25,6 +25,19 @@ class CompanyService(private val companyRepository: CompanyRepository) {
         companyRepository.save(company)
     }
 
+    fun updateCompany(company: Company) {
+        val base = companyRepository.getUserCompanyByName(company.company_name) ?: throw CompanyNotExistsException()
+
+        companyRepository.updateCompany(
+            base.company_id!!,
+            base.company_name,
+            company.company_description ?: base.company_description!!,
+            company.finger_needed ?: base.finger_needed!!,
+            company.photo_needed ?: base.photo_needed!!,
+            company.manager_needed ?: base.manager_needed!!,
+        )
+    }
+
     fun deleteCompany(company: Company) {
         companyRepository.getUserCompanyByName(company.company_name) ?: throw CompanyNotExistsException()
 

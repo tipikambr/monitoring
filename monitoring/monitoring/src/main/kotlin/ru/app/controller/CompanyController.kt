@@ -51,6 +51,17 @@ class CompanyController(
         return "OK"
     }
 
+    @PostMapping("/api/v1/update/company")
+    fun update(@RequestParam token: String, @RequestBody company: Company): String {
+        log.info("POST: /api/v1/register/company")
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin") throw PermissionDeniedException()
+
+        companyService.updateCompany(company)
+        return "OK"
+    }
+
     @PostMapping("/api/v1/delete/company")
     fun delete(@RequestParam token: String, @RequestBody name: Company): String {
         log.info("POST: /api/v1/delete/company")
