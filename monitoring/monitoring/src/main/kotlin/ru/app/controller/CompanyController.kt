@@ -21,6 +21,17 @@ class CompanyController(
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
+    @GetMapping("/api/v1/all/company")
+    fun getAll(@RequestParam token: String): List<Company> {
+        log.info("GET: /api/v1/all/company")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin") throw PermissionDeniedException()
+
+        return companyService.getCompanies()
+    }
+
     @GetMapping("/api/v1/info/company")
     fun info(@RequestParam token: String): Company {
         log.info("GET: /api/v1/info")
@@ -39,9 +50,17 @@ class CompanyController(
         companyService.createCompany(company)
         return "OK"
     }
-//
-//    @PostMapping("/api/v1/delete/company")
-//    fun delete(@RequestParam token: String, @RequestBody company: Company): String {
-//
-//    }
+
+    @PostMapping("/api/v1/delete/company")
+    fun delete(@RequestParam token: String, @RequestBody name: Company): String {
+        log.info("POST: /api/v1/delete/company")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin") throw PermissionDeniedException()
+
+        val company = companyService.getCompanyByName(name.company_name)
+        companyService.deleteCompany(company)
+        return "OK"
+    }
 }

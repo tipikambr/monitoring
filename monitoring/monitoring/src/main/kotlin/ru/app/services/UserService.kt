@@ -141,4 +141,18 @@ class UserService(
             )
         }
     }
+
+    fun getAll(): List<UserDTO> {
+        return userRepository.getUsers().map {
+            UserDTO(
+                it.user_name,
+                it.login,
+                it.password,
+                companyRepository.getUserCompanyById(it.company_id!!)?.company_name,
+                it.hours,
+                it.permissions,
+                if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null
+            )
+        }
+    }
 }

@@ -13,5 +13,9 @@ interface CompanyRepository  : CrudRepository<Company, String> {
     @Query("SELECT * FROM company WHERE company_id = :company_id LIMIT 1")
     fun getUserCompanyById(@Param("company_id") id: Int): Company?
 
-    fun save(company: Company)
+    @Query("SELECT * FROM users WHERE company_id = :company_id")
+    fun getCompanyWorkers(@Param("company_id") id: Int): List<User>
+
+    @Query("SELECT * FROM company")
+    fun getAll(): List<Company>
 }

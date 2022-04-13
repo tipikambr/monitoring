@@ -5,3 +5,6 @@ import org.springframework.web.bind.annotation.ResponseStatus
 
 @ResponseStatus(value = HttpStatus.LOCKED)
 class WorkersExistsException: RuntimeException("User has subordinates left")
+
+@ResponseStatus(value = HttpStatus.LOCKED)
+class CompanyContainsWorkersException: RuntimeException("Company contains workers")

@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
 import ru.app.dto.UserDTO
 import ru.app.exceptions.*
+import ru.app.model.Company
 import ru.app.model.Token
 import ru.app.model.User
 import ru.app.services.TokenService
@@ -16,6 +17,17 @@ class UserController(
     private val tokenService: TokenService,
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
+
+    @GetMapping("/api/v1/all/user")
+    fun getAll(@RequestParam token: String): List<UserDTO> {
+        log.info("GET: /api/v1/all/users")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin") throw PermissionDeniedException()
+
+        return userService.getAll()
+    }
 
     @GetMapping("/api/v1/info/user")
     fun info(@RequestParam token: String): UserDTO {
