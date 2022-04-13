@@ -2,7 +2,7 @@ insert into company
     (company_id, company_name, company_description,	finger_needed, photo_needed,manager_needed)
 VALUES
     (1, 'Green', null, true, true, true),
-    (2, 'Green2', 'extra company', true, true, true)
+    (2, 'Green2', 'extra company', true, true, true);
 
 insert into users
     (user_id, user_name, login, password, company_id, hours, permissions, boss_id)
