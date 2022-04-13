@@ -20,14 +20,14 @@ class UserController(
     @GetMapping("/api/v1/info/user")
     fun info(@RequestParam token: String): UserDTO {
         log.info("GET: /api/v1/info")
-        val id = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val id = tokenService.checkToken(token) ?: throw TokenExpiredException()
         return userService.getUserDTO(id) ?: throw UserNotFoundException()
     }
 
     @PostMapping("/api/v1/info/user")
     fun info(@RequestParam token: String, @RequestBody user: UserDTO): UserDTO {
         log.info("POST: /api/v1/info")
-        val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(myId)
         val interest = userService.getUser(user.login!!)
         if (me!!.permissions == "admin" || (interest != null && userService.isBoss(me.user_id!!, interest!!.user_id!!))){
@@ -40,7 +40,7 @@ class UserController(
     @PostMapping("/api/v1/register/user")
     fun register(@RequestParam token: String, @RequestBody userDTO: UserDTO): Token {
         log.info("POST: /api/v1/register")
-        val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(myId)
         if (me!!.permissions == "admin" || me.permissions == "manager") {
             var registeredUser = userService.getUser(userDTO.login!!)
@@ -67,6 +67,8 @@ class UserController(
             val token = tokenService.checkToken(user.user_id!!)
             if (token != null)
                 return token
+            if (tokenService.isExpired(user.user_id))
+                return tokenService.updateToken(user.user_id)
             return tokenService.generateToken(user.user_id, user.login, user.password)
         }
 
@@ -77,7 +79,7 @@ class UserController(
     fun delete(@RequestParam token: String, @RequestBody user: UserDTO): String {
         log.info("POST: /api/v1/delete/user")
 
-        val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val myID = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val interest = userService.getUser(user.login ?: throw UserNotFoundException())
         val me = userService.getUser(myID)
 
@@ -94,7 +96,7 @@ class UserController(
     fun update(@RequestParam token: String, @RequestBody user: UserDTO): String {
         log.info("POST: /api/v1/update/user")
 
-        val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val myID = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val interest = if (user.login != null) userService.getUser(user.login) else  userService.getUser(myID)
         val me = userService.getUser(myID)
 
@@ -122,7 +124,7 @@ class UserController(
     fun getWorkers(@RequestParam token: String): List<UserDTO> {
         log.info("GET: /api/v1/getWorkers")
 
-        val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val myID = tokenService.checkToken(token) ?: throw TokenExpiredException()
         return userService.getWorkers(myID)
     }
 
@@ -130,7 +132,7 @@ class UserController(
     fun getWorkers(@RequestParam token: String, @RequestBody boss: UserDTO): List<UserDTO> {
         log.info("POST: /api/v1/getWorkers")
 
-        val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
+        val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(myId)
         val interest = userService.getUser(boss.login!!)
         if (me!!.permissions == "admin" || (interest != null && userService.isBoss(me.user_id!!, interest!!.user_id!!))){

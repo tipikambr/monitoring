@@ -7,9 +7,7 @@ import java.sql.Timestamp
 
 @Table
 @JsonIgnoreProperties(
-    "user_id",
-    "user_id",
-    "project_id"
+    "user_id"
 )
 data class Token (
     @JsonProperty("user_id") val user_id: Long?,
