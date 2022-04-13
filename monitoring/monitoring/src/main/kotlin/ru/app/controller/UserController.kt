@@ -114,6 +114,7 @@ class UserController(
 
         if (me!!.permissions == "admin" || (interest != null && userService.isBoss(me.user_id!!, interest!!.user_id!!))){
             if (interest == null) throw UserNotFoundException()
+            if (me.user_id == interest.user_id && (interest.permissions != null || interest.boss_id != null || interest.hours != null)) throw PermissionDeniedException()
             userService.updateUser(
                 User(
                     interest.user_id,
