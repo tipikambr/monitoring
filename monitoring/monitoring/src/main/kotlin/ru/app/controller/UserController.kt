@@ -1,5 +1,6 @@
 package ru.app.controller
 
+import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
 import ru.app.dto.UserDTO
 import ru.app.exceptions.*
@@ -12,17 +13,20 @@ import ru.app.utils.passwordHash
 @RestController
 class UserController(
     private val userService: UserService,
-    private val tokenService: TokenService
+    private val tokenService: TokenService,
 ) {
+    private val log = LoggerFactory.getLogger(this::class.java)
 
     @GetMapping("/api/v1/info")
     fun info(@RequestParam token: String): UserDTO {
+        log.info("GET: /api/v1/info")
         val id = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         return userService.getUserDTO(id) ?: throw UserNotFoundException()
     }
 
     @PostMapping("/api/v1/info")
     fun info(@RequestParam token: String, @RequestBody user: UserDTO): UserDTO {
+        log.info("POST: /api/v1/info")
         val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         val me = userService.getUser(myId)
         val interest = userService.getUser(user.login!!)
@@ -35,6 +39,8 @@ class UserController(
 
     @PostMapping("/api/v1/register")
     fun register(@RequestBody userDTO: UserDTO): Token {
+        log.info("POST: /api/v1/register")
+
         var registeredUser = userService.getUser(userDTO.login!!)
 
         if (registeredUser == null) {
@@ -47,6 +53,8 @@ class UserController(
 
     @PostMapping("/api/v1/login")
     fun login(@RequestBody loginPassword: UserDTO): Token {
+        log.info("POST: /api/v1/login")
+
         val login = loginPassword.login
         val user = userService.getUser(login!!) ?: throw UserNotFoundException()
         val password = passwordHash(loginPassword.password!!)
@@ -63,6 +71,8 @@ class UserController(
 
     @PostMapping("/api/v1/delete/user")
     fun delete(@RequestParam token: String, @RequestBody user: UserDTO): String {
+        log.info("POST: /api/v1/delete/user")
+
         val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         val interest = userService.getUser(user.login ?: throw UserNotFoundException())
         val me = userService.getUser(myID)
@@ -78,6 +88,8 @@ class UserController(
 
     @PostMapping("/api/v1/update/user")
     fun update(@RequestParam token: String, @RequestBody user: UserDTO): String {
+        log.info("POST: /api/v1/update/user")
+
         val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         val interest = if (user.login != null) userService.getUser(user.login) else  userService.getUser(myID)
         val me = userService.getUser(myID)
@@ -104,12 +116,16 @@ class UserController(
 
     @GetMapping("/api/v1/getWorkers")
     fun getWorkers(@RequestParam token: String): List<UserDTO> {
+        log.info("GET: /api/v1/getWorkers")
+
         val myID = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         return userService.getWorkers(myID)
     }
 
     @PostMapping("/api/v1/getWorkers")
     fun getWorkers(@RequestParam token: String, @RequestBody boss: UserDTO): List<UserDTO> {
+        log.info("POST: /api/v1/getWorkers")
+
         val myId = tokenService.checkToken(token) ?: throw UnauthorizedAccessException()
         val me = userService.getUser(myId)
         val interest = userService.getUser(boss.login!!)

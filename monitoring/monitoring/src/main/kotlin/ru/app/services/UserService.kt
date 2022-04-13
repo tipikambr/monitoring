@@ -44,7 +44,7 @@ class UserService(
         return UserDTO(
             user.user_name,
             user.login,
-            user.password,
+            null,
             comnany_name,
             user.hours,
             user.permissions,
@@ -62,7 +62,7 @@ class UserService(
         return UserDTO(
             user.user_name,
             user.login,
-            user.password,
+            null,
             companyName,
             user.hours,
             user.permissions,
