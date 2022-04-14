@@ -17,6 +17,7 @@ create table project
     company_id          integer,
     project_name        text,
     project_description text,
+    project_creator_id  Bigint,
     PRIMARY KEY (project_id)
 );
 
@@ -24,6 +25,7 @@ create table task
 (
     task_id          bigserial,
     user_id          bigint,
+    creator_id       bigint,
     project_id       bigint,
     task_name        text,
     task_description text,
