@@ -16,8 +16,14 @@ interface UserProjectRepository : CrudRepository<Token, String> {
     @Modifying
     @Query("INSERT INTO projects_users (project_id, user_id) VALUES (:project_id, :user_id)")
     fun addUserToProject(
-        @Param("project_id") project_id: Long?,
+        @Param("project_id") project_id: Long,
         @Param("user_id") user_id: Long
     )
+
+    @Query("SELECT COUNT(*) FROM projects_users WHERE project_id = :project_id AND user_id = :user_id")
+    fun isExists(
+        @Param("project_id") project_id: Long,
+        @Param("user_id") user_id: Long
+    ): Int
 
 }

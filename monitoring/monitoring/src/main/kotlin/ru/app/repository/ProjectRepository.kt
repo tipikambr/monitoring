@@ -15,9 +15,10 @@ interface ProjectRepository : CrudRepository<Project, String> {
     fun getById(projectId: Long) : Project?
 
     @Modifying
-    @Query("INSERT INTO project (project_name, project_description, project_creator_id) VALUES (:project_name, :project_description, :project_creator_id)")
+    @Query("INSERT INTO project (project_name, company_id, project_description, project_creator_id) VALUES (:project_name, :company_id, :project_description, :project_creator_id)")
     fun add (
         @Param("project_name") project_name: String,
+        @Param("company_id") company_id: Int,
         @Param("project_description") project_description: String?,
         @Param("project_creator_id") project_creator_id: Long
     )
@@ -27,4 +28,13 @@ interface ProjectRepository : CrudRepository<Project, String> {
         @Param("project_name") project_name: String,
         @Param("project_creator_id") project_creator_id: Long
     ) : Project?
+
+    @Modifying
+    @Query("UPDATE project SET project_name = :project_name, project_description = :project_description, project_creator_id = :project_creator_id WHERE project_id = :project_id")
+    fun update(
+        @Param("project_id")project_id: Long?,
+        @Param("project_name")project_name: String,
+        @Param("project_description")project_description: String?,
+        @Param("project_creator_id")project_creator_id: Long?
+    )
 }
