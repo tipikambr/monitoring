@@ -8,10 +8,13 @@ import ru.app.model.Project
 import ru.app.model.ProjectsUsers
 import ru.app.model.Token
 
-interface UserProjectRepository : CrudRepository<Token, String> {
+interface UserProjectRepository : CrudRepository<ProjectsUsers, String> {
 
     @Query("SELECT * FROM projects_users WHERE user_id = :user_id")
     fun getUserProjects(@Param("user_id") id: Long): List<ProjectsUsers>
+
+    @Query("SELECT * FROM projects_users WHERE project_id = :project_id")
+    fun getProjectUsers(@Param("project_id") id: Long): List<ProjectsUsers>
 
     @Modifying
     @Query("INSERT INTO projects_users (project_id, user_id) VALUES (:project_id, :user_id)")
@@ -25,5 +28,9 @@ interface UserProjectRepository : CrudRepository<Token, String> {
         @Param("project_id") project_id: Long,
         @Param("user_id") user_id: Long
     ): Int
+
+    @Modifying
+    @Query("DELETE FROM projects_users WHERE project_id = :project_id")
+    fun deleteByProjectId(@Param("project_id") projectId: Long)
 
 }

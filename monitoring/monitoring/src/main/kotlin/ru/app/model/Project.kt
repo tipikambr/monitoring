@@ -13,7 +13,7 @@ import org.springframework.data.relational.core.mapping.Table
 )
 data class Project (
     @Id @JsonProperty("project_id") val project_id: Long?,
-    @JsonProperty("company_id") val company_id: Long?,
+    @JsonProperty("company_id") val company_id: Int?,
     @JsonProperty("project_name") val project_name: String,
     @JsonProperty("project_description") val project_description: String?,
     @JsonProperty("project_creator_id") val project_creator_id: Long?

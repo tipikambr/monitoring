@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.app.dto.ProjectDTO
+import ru.app.dto.ProjectInfo
 import ru.app.exceptions.PermissionDeniedException
 import ru.app.exceptions.TokenExpiredException
 import ru.app.model.Project
@@ -23,7 +24,7 @@ class ProjectController(
     private val log = LoggerFactory.getLogger(this::class.java)
 
     @GetMapping("/api/v1/all/project")
-    fun getAll(@RequestParam token: String): List<Project> {
+    fun getAll(@RequestParam token: String): List<ProjectInfo> {
         log.info("GET: /api/v1/all/project")
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
@@ -34,7 +35,7 @@ class ProjectController(
     }
 
     @GetMapping("/api/v1/my/project")
-    fun getMyProjects(@RequestParam token: String): List<Project> {
+    fun getMyProjects(@RequestParam token: String): List<ProjectInfo> {
         log.info("GET: /api/v1/my/project")
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
@@ -58,7 +59,7 @@ class ProjectController(
 
     @PostMapping("/api/v1/update/project")
     fun updateProject(@RequestParam token: String, @RequestBody project: ProjectDTO): String {
-        log.info("POST: /api/v1/create/project")
+        log.info("POST: /api/v1/update/project")
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
@@ -66,6 +67,20 @@ class ProjectController(
         if (me.permissions != "admin" && project.old_project_creator_login != null)
             throw PermissionDeniedException()
         projectService.updateProject(project, me)
+        return "OK"
+    }
+
+    @PostMapping("/api/v1/delete/project")
+    fun deleteWorkers(@RequestParam token: String, @RequestParam soft: Boolean, @RequestBody project: ProjectDTO): String {
+        log.info("POST: /api/v1/delete/project")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin" && me.permissions != "manager") throw PermissionDeniedException()
+        if (me.permissions != "admin" && project.project_creator_login != null)
+            throw PermissionDeniedException()
+
+        projectService.deleteProject(project, me, soft)
         return "OK"
     }
 }
