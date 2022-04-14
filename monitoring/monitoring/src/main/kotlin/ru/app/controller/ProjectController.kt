@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.app.dto.ProjectDTO
 import ru.app.dto.ProjectInfo
+import ru.app.dto.UserProjectDTO
 import ru.app.exceptions.PermissionDeniedException
 import ru.app.exceptions.TokenExpiredException
 import ru.app.model.Project
@@ -81,6 +82,18 @@ class ProjectController(
             throw PermissionDeniedException()
 
         projectService.deleteProject(project, me, soft)
+        return "OK"
+    }
+
+    @PostMapping("/api/v1/add_user/project")
+    fun addWorkerToProject(@RequestParam token: String, @RequestBody userProject: UserProjectDTO): String {
+        log.info("POST: /api/v1/add_user/project")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin" && projectService.hasAccessToProject(userProject, me)) throw PermissionDeniedException()
+
+        projectService.addUserToProject(userProject, userProject.project_creator_login ?: me.login)
         return "OK"
     }
 }

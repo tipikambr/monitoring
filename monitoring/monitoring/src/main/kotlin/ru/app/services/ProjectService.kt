@@ -3,13 +3,14 @@ package ru.app.services
 import org.springframework.stereotype.Service
 import ru.app.dto.ProjectDTO
 import ru.app.dto.ProjectInfo
+import ru.app.dto.UserProjectDTO
 import ru.app.exceptions.ProjectAlreadyExistsException
 import ru.app.exceptions.ProjectContainsWorkersException
 import ru.app.exceptions.ProjectNotExistsException
+import ru.app.exceptions.UserAlreadyExistsException
 import ru.app.exceptions.UserFromAnotherCompanyException
 import ru.app.exceptions.UserNotFoundException
 import ru.app.model.Project
-import ru.app.model.ProjectsUsers
 import ru.app.model.User
 import ru.app.repository.CompanyRepository
 import ru.app.repository.ProjectRepository
@@ -100,9 +101,6 @@ class ProjectService(
             userProjectRepository.addUserToProject(interest.project_id!!, newCreator.user_id!!)
     }
 
-
-
-
     fun deleteProject(project: ProjectDTO, user: User, soft: Boolean) {
         // Текущий создатель проекта
         val projectCreator = if (project.project_creator_login != null)
@@ -123,5 +121,23 @@ class ProjectService(
             userProjectRepository.deleteByProjectId(interest.project_id!!)
             projectRepository.delete(interest!!)
         }
+    }
+
+    // Если пользователь не является создателем проекта, то у него нет доступа к редактированию проекта. (если он не админ)
+    fun hasAccessToProject(userProject: UserProjectDTO, user: User): Boolean {
+        val project = projectRepository.getByNameAndCreator(userProject.project_name, user.user_id!!)
+        return project != null
+    }
+
+    fun addUserToProject(userProject: UserProjectDTO, creator_login: String) {
+        val creator = userRepository.getUser(creator_login) ?: throw UserNotFoundException()
+        val project = projectRepository.getByNameAndCreator(userProject.project_name, creator.user_id!!) ?: throw ProjectNotExistsException()
+        val user = userRepository.getUser(userProject.new_user_login) ?: throw UserNotFoundException()
+
+        if (creator.company_id != user.company_id) throw UserFromAnotherCompanyException()
+
+        if (userProjectRepository.isExists(project.project_id!!, user.user_id!!) != 0) throw UserAlreadyExistsException()
+
+        userProjectRepository.addUserToProject(project.project_id!!, user.user_id!!)
     }
 }
