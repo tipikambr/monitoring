@@ -96,4 +96,16 @@ class ProjectController(
         projectService.addUserToProject(userProject, userProject.project_creator_login ?: me.login)
         return "OK"
     }
+
+    @PostMapping("/api/v1/remove_user/project")
+    fun removeWorkerToProject(@RequestParam token: String, @RequestBody userProject: UserProjectDTO): String {
+        log.info("POST: /api/v1/add_user/project")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        if (me.permissions != "admin" && projectService.hasAccessToProject(userProject, me)) throw PermissionDeniedException()
+
+        projectService.removeUserToProject(userProject, userProject.project_creator_login ?: me.login)
+        return "OK"
+    }
 }

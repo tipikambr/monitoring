@@ -33,4 +33,8 @@ interface UserProjectRepository : CrudRepository<ProjectsUsers, String> {
     @Query("DELETE FROM projects_users WHERE project_id = :project_id")
     fun deleteByProjectId(@Param("project_id") projectId: Long)
 
+    @Modifying
+    @Query("DELETE FROM projects_users WHERE project_id = :project_id AND user_id = :user_id")
+    fun delete(@Param("user_id")userId: Long, @Param("project_id")projectId: Long)
+
 }

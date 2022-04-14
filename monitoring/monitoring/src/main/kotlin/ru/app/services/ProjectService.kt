@@ -132,12 +132,24 @@ class ProjectService(
     fun addUserToProject(userProject: UserProjectDTO, creator_login: String) {
         val creator = userRepository.getUser(creator_login) ?: throw UserNotFoundException()
         val project = projectRepository.getByNameAndCreator(userProject.project_name, creator.user_id!!) ?: throw ProjectNotExistsException()
-        val user = userRepository.getUser(userProject.new_user_login) ?: throw UserNotFoundException()
+        val user = userRepository.getUser(userProject.user_login) ?: throw UserNotFoundException()
 
         if (creator.company_id != user.company_id) throw UserFromAnotherCompanyException()
 
         if (userProjectRepository.isExists(project.project_id!!, user.user_id!!) != 0) throw UserAlreadyExistsException()
 
         userProjectRepository.addUserToProject(project.project_id!!, user.user_id!!)
+    }
+
+    fun removeUserToProject(userProject: UserProjectDTO, creator_login: String) {
+        val creator = userRepository.getUser(creator_login) ?: throw UserNotFoundException()
+        val project = projectRepository.getByNameAndCreator(userProject.project_name, creator.user_id!!) ?: throw ProjectNotExistsException()
+        val user = userRepository.getUser(userProject.user_login) ?: throw UserNotFoundException()
+
+        if (creator.company_id != user.company_id) throw UserFromAnotherCompanyException()
+
+        if (userProjectRepository.isExists(project.project_id!!, user.user_id!!) == 0) throw UserNotFoundException()
+
+        userProjectRepository.delete(user.user_id, project.project_id)
     }
 }
