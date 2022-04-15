@@ -58,6 +58,8 @@ class ProjectController(
         return "OK"
     }
 
+    // Я тут накосячил с правами по создателю, исправить!!! (78 -- мб project.project_creator_login)
+
     @PostMapping("/api/v1/update/project")
     fun updateProject(@RequestParam token: String, @RequestBody project: ProjectDTO): String {
         log.info("POST: /api/v1/update/project")
@@ -65,7 +67,7 @@ class ProjectController(
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
         if (me.permissions != "admin" && me.permissions != "manager") throw PermissionDeniedException()
-        if (me.permissions != "admin" && project.old_project_creator_login != null)
+        if (me.permissions != "admin" && project.project_creator_login != null)
             throw PermissionDeniedException()
         projectService.updateProject(project, me)
         return "OK"
