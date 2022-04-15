@@ -3,6 +3,7 @@ package ru.app.services
 import org.springframework.stereotype.Service
 import ru.app.dto.ProjectDTO
 import ru.app.dto.ProjectInfo
+import ru.app.dto.UserDTO
 import ru.app.dto.UserProjectDTO
 import ru.app.exceptions.ProjectAlreadyExistsException
 import ru.app.exceptions.ProjectContainsWorkersException
@@ -124,8 +125,8 @@ class ProjectService(
     }
 
     // Если пользователь не является создателем проекта, то у него нет доступа к редактированию проекта. (если он не админ)
-    fun hasAccessToProject(userProject: UserProjectDTO, user: User): Boolean {
-        val project = projectRepository.getByNameAndCreator(userProject.project_name, user.user_id!!)
+    fun hasAccessToProject(userProjectName: String, user: User): Boolean {
+        val project = projectRepository.getByNameAndCreator(userProjectName, user.user_id!!)
         return project != null
     }
 
@@ -151,5 +152,25 @@ class ProjectService(
         if (userProjectRepository.isExists(project.project_id!!, user.user_id!!) == 0) throw UserNotFoundException()
 
         userProjectRepository.delete(user.user_id, project.project_id)
+    }
+
+    fun getProjectWorkers(projectName: String, creatorLogin: String): List<UserDTO> {
+        val creator = userRepository.getUser(creatorLogin) ?: throw UserNotFoundException()
+        val project = projectRepository.getByNameAndCreator(projectName, creator.user_id!!)
+
+        return userProjectRepository.getProjectUsers(project!!.project_id!!).map{
+            val user = userRepository.getUser(it.user_id)
+            val companyName = companyRepository.getUserCompanyById(user!!.company_id!!)!!.company_name
+            val bossLogin = userRepository.getUser(user.boss_id!!)!!.login
+            UserDTO(
+                user.user_name,
+                user.login,
+                null,
+                companyName,
+                user.hours,
+                user.permissions,
+                bossLogin
+            )
+        }
     }
 }
