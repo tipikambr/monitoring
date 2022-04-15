@@ -129,9 +129,13 @@ class ProjectService(
     }
 
     // Если пользователь не является создателем проекта, то у него нет доступа к редактированию проекта. (если он не админ)
-    fun hasAccessToProject(userProjectName: String, user: User): Boolean {
+    fun canEditProject(userProjectName: String, user: User): Boolean {
         val project = projectRepository.getByNameAndCreator(userProjectName, user.user_id!!)
         return project != null
+    }
+
+    fun hasAccessToProject(userId: Long, projectId: Long): Boolean {
+        return userProjectRepository.isExists(projectId, userId) != 0
     }
 
     fun addUserToProject(userProject: UserProjectDTO, creator_login: String) {

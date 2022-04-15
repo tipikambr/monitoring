@@ -1,8 +1,10 @@
 package ru.app.services
 
 import org.springframework.stereotype.Service
+import ru.app.dto.TaskDTO
 import ru.app.model.Project
 import ru.app.model.Task
+import ru.app.model.User
 import ru.app.repository.CompanyRepository
 import ru.app.repository.ProjectRepository
 import ru.app.repository.TaskRepository
@@ -20,5 +22,19 @@ class TaskService(
 
     fun getTasksByProject(projectId: Long?): List<Task> {
         return taskRepository.getAllForProject(projectId)
+    }
+
+    fun createTask(worker: User, creator: User, project: Project, taskInfo: TaskDTO) {
+        taskRepository.createTask(
+            worker.user_id!!,
+            creator.user_id!!,
+            project.project_id,
+            taskInfo.task_name,
+            taskInfo.task_description,
+            taskInfo.start_time,
+            taskInfo.end_time,
+            taskInfo.status,
+            taskInfo.progress
+        )
     }
 }

@@ -12,5 +12,6 @@ data class TaskDTO (
     @JsonProperty("start_time") val start_time: Timestamp?,
     @JsonProperty("end_time") val end_time: Timestamp?,
     @JsonProperty("status") val status: String?,
-    @JsonProperty("progress") val progress: String?
-)
+    @JsonProperty("progress") val progress: String?,
+    @JsonProperty("worker_login") val worker_login: String? = null
+    )

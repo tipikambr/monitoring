@@ -6,13 +6,12 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.client.HttpClientErrorException
 import ru.app.dto.ProjectInfo
 import ru.app.dto.TaskDTO
 import ru.app.exceptions.BadRequestException
-import ru.app.exceptions.PermissionDeniedException
 import ru.app.exceptions.ProjectNotExistsException
 import ru.app.exceptions.TokenExpiredException
+import ru.app.exceptions.UserNotFoundException
 import ru.app.model.Task
 import ru.app.services.ProjectService
 import ru.app.services.TaskService
@@ -49,7 +48,25 @@ class TaskController(
         return taskService.getTasksByProject(project.project_id).map{ it.toDTO() }
     }
 
-//    @PostMapping("/api")
+
+    //TODO доделать проверку на дубликаты!
+
+    @PostMapping("/api/v1/create/task")
+    fun createTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): String {
+        log.info("POST: /api/v1/create/task")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name, taskInfo.creator_login) ?: throw ProjectNotExistsException()
+        if (projectService.hasAccessToProject(me.user_id!!, project.project_id!!)) {
+            val worker = if (taskInfo.worker_login != null)
+                userService.getUser(taskInfo.worker_login) ?: throw UserNotFoundException()
+                else me
+            val creator = userService.getUser(taskInfo.creator_login) ?: throw UserNotFoundException()
+            taskService.createTask(worker, creator, project, taskInfo)
+        }
+        return "OK"
+    }
 
     fun Task.toDTO(): TaskDTO {
         val creatorName = userService.getUser(creator_id)!!.login

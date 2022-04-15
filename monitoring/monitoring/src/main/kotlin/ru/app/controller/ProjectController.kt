@@ -92,7 +92,7 @@ class ProjectController(
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
-        if (me.permissions != "admin" && projectService.hasAccessToProject(userProject.project_name, me)) throw PermissionDeniedException()
+        if (me.permissions != "admin" && projectService.canEditProject(userProject.project_name, me)) throw PermissionDeniedException()
 
         projectService.addUserToProject(userProject, userProject.project_creator_login ?: me.login)
         return "OK"
@@ -104,7 +104,7 @@ class ProjectController(
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
-        if (me.permissions != "admin" && projectService.hasAccessToProject(projectInfo.project_name!!, me)) throw PermissionDeniedException()
+        if (me.permissions != "admin" && projectService.canEditProject(projectInfo.project_name!!, me)) throw PermissionDeniedException()
 
         return projectService.getProjectWorkers(projectInfo.project_name!!, projectInfo.project_creator_login ?: me.login)
     }
@@ -115,7 +115,7 @@ class ProjectController(
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
-        if (me.permissions != "admin" && projectService.hasAccessToProject(userProject.project_name, me)) throw PermissionDeniedException()
+        if (me.permissions != "admin" && projectService.canEditProject(userProject.project_name, me)) throw PermissionDeniedException()
 
         projectService.removeUserToProject(userProject, userProject.project_creator_login ?: me.login)
         return "OK"
