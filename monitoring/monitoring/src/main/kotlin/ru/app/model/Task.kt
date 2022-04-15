@@ -10,7 +10,8 @@ import java.sql.Timestamp
 @JsonIgnoreProperties(
     "task_id",
     "user_id",
-    "project_id"
+    "project_id",
+    "creator_id"
 )
 data class Task (
     @Id @JsonProperty("task_id") val task_id: Long,
@@ -18,8 +19,9 @@ data class Task (
     @JsonProperty("creator_id") val creator_id: Long,
     @JsonProperty("project_id") val project_id: Long,
     @JsonProperty("task_name") val task_name: String,
-    @JsonProperty("task_description") val task_description: String,
-    @JsonProperty("start_time") val start_time: Timestamp,
-    @JsonProperty("end_time") val end_time: Timestamp,
-    @JsonProperty("status") val status: String
+    @JsonProperty("task_description") val task_description: String?,
+    @JsonProperty("start_time") val start_time: Timestamp?,
+    @JsonProperty("end_time") val end_time: Timestamp?,
+    @JsonProperty("status") val status: String?,
+    @JsonProperty("progress") val progress: String?
 )

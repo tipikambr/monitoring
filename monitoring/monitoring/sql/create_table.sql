@@ -32,6 +32,7 @@ create table task
     start_time       timestamp,
     end_time         timestamp,
     status           text,
+    progress         text,
     PRIMARY KEY (task_id, user_id)
 );
 

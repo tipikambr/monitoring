@@ -27,10 +27,19 @@ VALUES
     (4, 'test1', 'test1', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 1, 8, 'user', 3),
     (5, 'test2', 'test2', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 1, 8, 'user', 4),
     (6, 'test3', 'test3', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 2),
-    (7, 'test4', 'test4', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 1),
-    (8, 'test5', 'test5', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 3);
+    (7, 'test4', 'test4', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 6),
+    (8, 'test5', 'test5', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 7);
 
 SELECT pg_catalog.setval(pg_get_serial_sequence('users', 'user_id'), (SELECT MAX(user_id) FROM users)+1);
+
+insert into task
+    (task_id, user_id, creator_id, project_id, task_name, task_description, start_time, end_time, status, progress)
+VALUES
+    (1, 1, 1, 1, 'Практика', 'Запилить почти весь диплом за месяц, даже меньше... звучит хайпово', '2021-04-04 00:00:00'::TIMESTAMP, '2021-04-30 00:00:00'::TIMESTAMP, 'PROGRESS', '80h'),
+    (2, 2, 2, 2, 'Практика', 'Запилить почти весь диплом за месяц, даже меньше... звучит хайпово', '2021-04-04 00:00:00'::TIMESTAMP, '2021-04-30 00:00:00'::TIMESTAMP, 'PROGRESS', null);
+
+
+SELECT pg_catalog.setval(pg_get_serial_sequence('task', 'task_id'), (SELECT MAX(task_id) FROM task)+1);
 
 
 insert into projects_users
@@ -38,9 +47,9 @@ insert into projects_users
 VALUES
     (1, 1),
     (1, 2),
-    (1, 3),
-    (1, 4),
-    (2, 1),
-    (2, 1),
     (3, 1),
-    (4, 1);
+    (4, 2),
+    (2, 3),
+    (2, 4),
+    (6, 3),
+    (7, 4);

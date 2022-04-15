@@ -26,6 +26,10 @@ class ProjectService(
     private val companyRepository: CompanyRepository
 ) {
 
+    fun getProjectById(projectId: Long): Project {
+        return projectRepository.getById(projectId) ?: throw ProjectNotExistsException()
+    }
+
     fun getAllProjects(): List<ProjectInfo> {
         return projectRepository.getAll().map {
             ProjectInfo(
@@ -161,7 +165,7 @@ class ProjectService(
         return userProjectRepository.getProjectUsers(project!!.project_id!!).map{
             val user = userRepository.getUser(it.user_id)
             val companyName = companyRepository.getUserCompanyById(user!!.company_id!!)!!.company_name
-            val bossLogin = userRepository.getUser(user.boss_id!!)!!.login
+            val bossLogin = if (user.boss_id == null || user.boss_id == 0L) null else userRepository.getUser(user.boss_id)!!.login
             UserDTO(
                 user.user_name,
                 user.login,
@@ -172,5 +176,10 @@ class ProjectService(
                 bossLogin
             )
         }
+    }
+
+    fun getProjectByProjectNameAndCreatorLogin(projectName: String, projectCreatorLogin: String): Project? {
+        val creator = userRepository.getUser(projectCreatorLogin) ?: throw UserNotFoundException()
+        return projectRepository.getByNameAndCreator(projectName, creator.user_id!!)
     }
 }
