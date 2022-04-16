@@ -121,7 +121,11 @@ class UserService(
     }
 
     fun getCompanyByName(name: String): Company {
-        return companyRepository?.getUserCompanyByName(name) ?: throw CompanyNotExistsException()
+        return companyRepository.getUserCompanyByName(name) ?: throw CompanyNotExistsException()
+    }
+
+    fun getWorkersAsUser(user_id: Long): List<User>{
+        return userRepository.getWorkers(user_id)
     }
 
     fun getWorkers(user_id: Long): List<UserDTO> {

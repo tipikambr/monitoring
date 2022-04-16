@@ -9,7 +9,7 @@ import ru.app.repository.TokenRepository
 import ru.app.repository.UserRepository
 import ru.app.utils.hashString
 import java.sql.Timestamp
-import java.util.*
+import java.util.Date
 
 @Service
 class TokenService(

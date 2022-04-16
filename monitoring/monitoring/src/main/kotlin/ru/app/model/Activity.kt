@@ -15,5 +15,5 @@ data class Activity (
     @Id @JsonProperty("activity_id") val activity_id: Long,
     @JsonProperty("user_id") val user_id: Long,
     @JsonProperty("start_time") val start_time: Timestamp,
-    @JsonProperty("end_time") val end_time: Timestamp
+    @JsonProperty("end_time") val end_time: Timestamp?
 )
