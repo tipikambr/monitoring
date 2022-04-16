@@ -52,26 +52,29 @@ class TaskController(
     //TODO доделать проверку на дубликаты!
 
     @PostMapping("/api/v1/create/task")
-    fun createTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): String {
+    fun createTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): Long? {
         log.info("POST: /api/v1/create/task")
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
-        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name, taskInfo.creator_login) ?: throw ProjectNotExistsException()
+        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name, taskInfo.creator_login!!) ?: throw ProjectNotExistsException()
+        var task_id : Long? = null
         if (projectService.hasAccessToProject(me.user_id!!, project.project_id!!)) {
             val worker = if (taskInfo.worker_login != null)
                 userService.getUser(taskInfo.worker_login) ?: throw UserNotFoundException()
                 else me
             val creator = userService.getUser(taskInfo.creator_login) ?: throw UserNotFoundException()
-            taskService.createTask(worker, creator, project, taskInfo)
+            task_id = taskService.createTask(worker, creator, project, taskInfo)
         }
-        return "OK"
+
+        return task_id
     }
 
     fun Task.toDTO(): TaskDTO {
         val creatorName = userService.getUser(creator_id)!!.login
         val projectName = projectService.getProjectById(project_id).project_name
         return TaskDTO(
+            task_id,
             creatorName,
             projectName,
             task_name,

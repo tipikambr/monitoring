@@ -8,7 +8,6 @@ import java.sql.Timestamp
 
 @Table
 @JsonIgnoreProperties(
-    "task_id",
     "user_id",
     "project_id",
     "creator_id"

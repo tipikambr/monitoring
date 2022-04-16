@@ -24,8 +24,8 @@ class TaskService(
         return taskRepository.getAllForProject(projectId)
     }
 
-    fun createTask(worker: User, creator: User, project: Project, taskInfo: TaskDTO) {
-        taskRepository.createTask(
+    fun createTask(worker: User, creator: User, project: Project, taskInfo: TaskDTO): Long? {
+        return taskRepository.createTask(
             worker.user_id!!,
             creator.user_id!!,
             project.project_id,

@@ -5,7 +5,8 @@ import org.springframework.data.annotation.Id
 import java.sql.Timestamp
 
 data class TaskDTO (
-    @JsonProperty("creator_login") val creator_login: String,
+    @JsonProperty("task_id") val task_id: Long,
+    @JsonProperty("creator_login") val creator_login: String?,
     @JsonProperty("project_name") val project_name: String,
     @JsonProperty("task_name") val task_name: String,
     @JsonProperty("task_description") val task_description: String?,
