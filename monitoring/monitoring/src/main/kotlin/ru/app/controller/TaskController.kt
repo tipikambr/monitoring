@@ -48,9 +48,6 @@ class TaskController(
         return taskService.getTasksByProject(project.project_id).map{ it.toDTO() }
     }
 
-
-    //TODO доделать проверку на дубликаты!
-
     @PostMapping("/api/v1/create/task")
     fun createTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): Long? {
         log.info("POST: /api/v1/create/task")
@@ -68,6 +65,41 @@ class TaskController(
         }
 
         return task_id
+    }
+
+    @PostMapping("/api/v1/delete/task")
+    fun deleteTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): String{
+        log.info("POST: /api/v1/delete/task")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name, taskInfo.creator_login!!) ?: throw ProjectNotExistsException()
+        if (projectService.hasAccessToProject(me.user_id!!, project.project_id!!)) {
+            val worker = if (taskInfo.worker_login != null)
+                userService.getUser(taskInfo.worker_login) ?: throw UserNotFoundException()
+                else me
+            val creator = userService.getUser(taskInfo.creator_login) ?: throw UserNotFoundException()
+            taskService.deleteTask(worker, creator, project, taskInfo)
+        }
+        return "OK"
+    }
+
+    @PostMapping("/api/v1/update/task")
+    fun updateTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): Long? {
+        log.info("POST: /api/v1/delete/task")
+
+        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(userId)!!
+        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name, taskInfo.creator_login!!) ?: throw ProjectNotExistsException()
+        var id: Long? = null;
+        if (projectService.hasAccessToProject(me.user_id!!, project.project_id!!)) {
+            val worker = if (taskInfo.worker_login != null)
+                userService.getUser(taskInfo.worker_login) ?: throw UserNotFoundException()
+                else me
+            val creator = userService.getUser(taskInfo.creator_login) ?: throw UserNotFoundException()
+            id = taskService.updateTask(worker, creator, project, taskInfo)
+        }
+        return id
     }
 
     fun Task.toDTO(): TaskDTO {

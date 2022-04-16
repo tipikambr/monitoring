@@ -13,7 +13,7 @@ interface TaskRepository : CrudRepository<Task, String> {
 
     @Query("SELECT * FROM task WHERE project_id = :project_id")
     fun getAllForProject(@Param("project_id") projectId: Long?): List<Task>
-    
+
     @Query("INSERT INTO task" +
             "(user_id, creator_id, project_id, task_name, task_description, start_time, end_time, status, progress) " +
             "VALUES" +
@@ -29,4 +29,7 @@ interface TaskRepository : CrudRepository<Task, String> {
         @Param("status") status: String?,
         @Param("progress") progress: String?
     ): Long?
+
+    @Query("SELECT * FROM task WHERE task_id = :task_id AND user_id = :user_id")
+    fun findTask(@Param("user_id") user_id: Long, @Param("task_id") task_id: Long) : Task?
 }
