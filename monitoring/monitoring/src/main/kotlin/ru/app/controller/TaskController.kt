@@ -7,9 +7,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.app.dto.ProjectInfo
+import ru.app.dto.Status
 import ru.app.dto.TaskDTO
+import ru.app.dto.setStatus
 import ru.app.exceptions.BadRequestException
 import ru.app.exceptions.ProjectNotExistsException
+import ru.app.exceptions.StatusNotExistsException
 import ru.app.exceptions.TokenExpiredException
 import ru.app.exceptions.UserNotFoundException
 import ru.app.model.Task
@@ -41,8 +44,7 @@ class TaskController(
     fun getProjectTask(@RequestParam token: String, @RequestBody projectInfo: ProjectInfo): List<TaskDTO> {
         log.info("POST: /api/v1/project/task")
 
-        val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
-        val me = userService.getUser(userId)!!
+        tokenService.checkToken(token) ?: throw TokenExpiredException()
         if (projectInfo.project_name == null || projectInfo.project_creator_login == null) throw BadRequestException()
         val project = projectService.getProjectByProjectNameAndCreatorLogin(projectInfo.project_name, projectInfo.project_creator_login) ?: throw ProjectNotExistsException()
         return taskService.getTasksByProject(project.project_id).map{ it.toDTO() }
@@ -113,7 +115,7 @@ class TaskController(
             task_description,
             start_time,
             end_time,
-            status,
+            setStatus(status),
             progress
         )
     }

@@ -2,6 +2,7 @@ package ru.app.services
 
 import org.springframework.stereotype.Service
 import ru.app.dto.TaskDTO
+import ru.app.dto.setStatus
 import ru.app.exceptions.TaskNotFoundException
 import ru.app.model.Project
 import ru.app.model.Task
@@ -34,7 +35,7 @@ class TaskService(
             taskInfo.task_description,
             taskInfo.start_time,
             taskInfo.end_time,
-            taskInfo.status,
+            taskInfo.status?.status,
             taskInfo.progress
         )
     }
@@ -51,7 +52,7 @@ class TaskService(
             taskInfo.task_description,
             taskInfo.start_time,
             taskInfo.end_time,
-            taskInfo.status,
+            taskInfo.status?.status,
             taskInfo.progress
         )
     }
