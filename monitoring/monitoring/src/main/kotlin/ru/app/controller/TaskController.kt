@@ -88,7 +88,7 @@ class TaskController(
 
     @PostMapping("/api/v1/update/task")
     fun updateTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): Long? {
-        log.info("POST: /api/v1/delete/task")
+        log.info("POST: /api/v1/update/task")
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
@@ -107,6 +107,7 @@ class TaskController(
     fun Task.toDTO(): TaskDTO {
         val creatorName = userService.getUser(creator_id)!!.login
         val projectName = projectService.getProjectById(project_id).project_name
+        val worker = userService.getUser(user_id)
         return TaskDTO(
             task_id,
             creatorName,
@@ -116,7 +117,8 @@ class TaskController(
             start_time,
             end_time,
             setStatus(status),
-            progress
+            progress,
+            worker?.login
         )
     }
 }

@@ -1,7 +1,6 @@
 package ru.app.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.springframework.data.annotation.Id
 import ru.app.exceptions.StatusNotExistsException
 import java.sql.Timestamp
 
