@@ -56,13 +56,13 @@ class ProjectService(
     }
 
     fun createProject(project: Project, user: User) {
-        var interest = projectRepository.getByNameAndCreator(project.project_name, user.user_id!!)
+        var interest = projectRepository.getByNameAndCreator(project.project_name)
         if (interest != null) throw ProjectAlreadyExistsException()
-        projectRepository.add(project.project_name, user.company_id!!, project.project_description, user.user_id)
-        interest = projectRepository.getByNameAndCreator(project.project_name, user.user_id)
+        projectRepository.add(project.project_name, user.company_id!!, project.project_description, user.user_id!!)
+        interest = projectRepository.getByNameAndCreator(project.project_name)
 
-        if (userProjectRepository.isExists(interest!!.project_id!!, user.user_id) == 0)
-            userProjectRepository.addUserToProject(interest!!.project_id!!, user.user_id)
+        if (userProjectRepository.isExists(interest!!.project_id!!, user.user_id!!) == 0)
+            userProjectRepository.addUserToProject(interest!!.project_id!!, user.user_id!!)
     }
 
     fun updateProject(project: ProjectDTO, user: User) {
@@ -73,7 +73,7 @@ class ProjectService(
             user.user_id
 
         //Проект, который мы хотим менять
-        val interest: Project? = projectRepository.getByNameAndCreator(project.old_project_name!!, projectCreator!!)
+        val interest: Project? = projectRepository.getByNameAndCreator(project.old_project_name!!)
             ?: throw ProjectNotExistsException()
 
         //Новый создатель проекта (главный), если не меняется, то он равен null
@@ -114,7 +114,7 @@ class ProjectService(
             user.user_id
 
         // Проект, который хотим удалить
-        var interest: Project? = projectRepository.getByNameAndCreator(project.project_name!!, projectCreator!!)
+        var interest: Project? = projectRepository.getByNameAndCreator(project.project_name!!)
             ?: throw ProjectNotExistsException()
 
         //Удаление проекта, если в проекте всего один человек, удаляется без проблем, если больше -- то нужен параметр hard delete.
@@ -130,7 +130,7 @@ class ProjectService(
 
     // Если пользователь не является создателем проекта, то у него нет доступа к редактированию проекта. (если он не админ)
     fun canEditProject(userProjectName: String, user: User): Boolean {
-        val project = projectRepository.getByNameAndCreator(userProjectName, user.user_id!!)
+        val project = projectRepository.getByNameAndCreator(userProjectName)
         return project != null
     }
 
@@ -140,7 +140,7 @@ class ProjectService(
 
     fun addUserToProject(userProject: UserProjectDTO, creator_login: String) {
         val creator = userRepository.getUser(creator_login) ?: throw UserNotFoundException()
-        val project = projectRepository.getByNameAndCreator(userProject.project_name, creator.user_id!!) ?: throw ProjectNotExistsException()
+        val project = projectRepository.getByNameAndCreator(userProject.project_name) ?: throw ProjectNotExistsException()
         val user = userRepository.getUser(userProject.user_login) ?: throw UserNotFoundException()
 
         if (creator.company_id != user.company_id) throw UserFromAnotherCompanyException()
@@ -152,7 +152,7 @@ class ProjectService(
 
     fun removeUserToProject(userProject: UserProjectDTO, creator_login: String) {
         val creator = userRepository.getUser(creator_login) ?: throw UserNotFoundException()
-        val project = projectRepository.getByNameAndCreator(userProject.project_name, creator.user_id!!) ?: throw ProjectNotExistsException()
+        val project = projectRepository.getByNameAndCreator(userProject.project_name) ?: throw ProjectNotExistsException()
         val user = userRepository.getUser(userProject.user_login) ?: throw UserNotFoundException()
 
         if (creator.company_id != user.company_id) throw UserFromAnotherCompanyException()
@@ -164,7 +164,7 @@ class ProjectService(
 
     fun getProjectWorkers(projectName: String, creatorLogin: String): List<UserDTO> {
         val creator = userRepository.getUser(creatorLogin) ?: throw UserNotFoundException()
-        val project = projectRepository.getByNameAndCreator(projectName, creator.user_id!!)
+        val project = projectRepository.getByNameAndCreator(projectName)
 
         return userProjectRepository.getProjectUsers(project!!.project_id!!).map{
             val user = userRepository.getUser(it.user_id)
@@ -182,8 +182,8 @@ class ProjectService(
         }
     }
 
-    fun getProjectByProjectNameAndCreatorLogin(projectName: String, projectCreatorLogin: String): Project? {
-        val creator = userRepository.getUser(projectCreatorLogin) ?: throw UserNotFoundException()
-        return projectRepository.getByNameAndCreator(projectName, creator.user_id!!)
+    fun getProjectByProjectNameAndCreatorLogin(projectName: String): Project? {
+//        val creator = userRepository.getUser(projectCreatorLogin) ?: throw UserNotFoundException()
+        return projectRepository.getByNameAndCreator(projectName)
     }
 }

@@ -92,7 +92,7 @@ class TaskController(
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
-        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name, taskInfo.creator_login!!) ?: throw ProjectNotExistsException()
+        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name) ?: throw ProjectNotExistsException()
         var id: Long? = null;
         if (projectService.hasAccessToProject(me.user_id!!, project.project_id!!)) {
             val worker = if (taskInfo.worker_login != null)

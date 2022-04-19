@@ -23,10 +23,10 @@ interface ProjectRepository : CrudRepository<Project, String> {
         @Param("project_creator_id") project_creator_id: Long
     )
 
-    @Query("SELECT * FROM project WHERE project_name = :project_name AND project_creator_id = :project_creator_id LIMIT 1")
+    @Query("SELECT * FROM project WHERE project_name = :project_name LIMIT 1")
     fun getByNameAndCreator(
-        @Param("project_name") project_name: String,
-        @Param("project_creator_id") project_creator_id: Long
+        @Param("project_name") project_name: String
+//        @Param("project_creator_id") project_creator_id: Long
     ) : Project?
 
     @Modifying
