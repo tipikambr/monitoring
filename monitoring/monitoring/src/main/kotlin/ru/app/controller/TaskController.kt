@@ -46,7 +46,7 @@ class TaskController(
 
         tokenService.checkToken(token) ?: throw TokenExpiredException()
         if (projectInfo.project_name == null || projectInfo.project_creator_login == null) throw BadRequestException()
-        val project = projectService.getProjectByProjectNameAndCreatorLogin(projectInfo.project_name, projectInfo.project_creator_login) ?: throw ProjectNotExistsException()
+        val project = projectService.getProjectByProjectNameAndCreatorLogin(projectInfo.project_name) ?: throw ProjectNotExistsException()
         return taskService.getTasksByProject(project.project_id).map{ it.toDTO() }
     }
 
@@ -56,13 +56,13 @@ class TaskController(
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
-        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name, taskInfo.creator_login!!) ?: throw ProjectNotExistsException()
+        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name) ?: throw ProjectNotExistsException()
         var task_id : Long? = null
         if (projectService.hasAccessToProject(me.user_id!!, project.project_id!!)) {
             val worker = if (taskInfo.worker_login != null)
                 userService.getUser(taskInfo.worker_login) ?: throw UserNotFoundException()
                 else me
-            val creator = userService.getUser(taskInfo.creator_login) ?: throw UserNotFoundException()
+            val creator = userService.getUser(taskInfo.creator_login!!) ?: throw UserNotFoundException()
             task_id = taskService.createTask(worker, creator, project, taskInfo)
         }
 
@@ -75,12 +75,12 @@ class TaskController(
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
-        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name, taskInfo.creator_login!!) ?: throw ProjectNotExistsException()
+        val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name) ?: throw ProjectNotExistsException()
         if (projectService.hasAccessToProject(me.user_id!!, project.project_id!!)) {
             val worker = if (taskInfo.worker_login != null)
                 userService.getUser(taskInfo.worker_login) ?: throw UserNotFoundException()
                 else me
-            val creator = userService.getUser(taskInfo.creator_login) ?: throw UserNotFoundException()
+            val creator = userService.getUser(taskInfo.creator_login!!) ?: throw UserNotFoundException()
             taskService.deleteTask(worker, creator, project, taskInfo)
         }
         return "OK"
@@ -98,7 +98,7 @@ class TaskController(
             val worker = if (taskInfo.worker_login != null)
                 userService.getUser(taskInfo.worker_login) ?: throw UserNotFoundException()
                 else me
-            val creator = userService.getUser(taskInfo.creator_login) ?: throw UserNotFoundException()
+            val creator = userService.getUser(taskInfo.creator_login!!) ?: throw UserNotFoundException()
             id = taskService.updateTask(worker, creator, project, taskInfo)
         }
         return id
