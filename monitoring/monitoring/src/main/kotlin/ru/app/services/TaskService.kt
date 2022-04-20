@@ -40,12 +40,13 @@ class TaskService(
         )
     }
 
-    fun updateTask(worker: User, creator: User, project: Project, taskInfo: TaskDTO): Long? {
+    fun updateTask(worker: User, creator: User, project: Project, taskInfo: TaskDTO) {
         val old_task = taskRepository.findTask(worker.user_id!!, taskInfo.task_id) ?: throw TaskNotFoundException()
-        taskRepository.delete(old_task)
+//        taskRepository.delete(old_task)
 
-        return taskRepository.createTask(
-            worker.user_id!!,
+        taskRepository.updateTask(
+            old_task.task_id,
+            worker.user_id,
             creator.user_id!!,
             project.project_id,
             taskInfo.task_name,

@@ -11,6 +11,7 @@ import ru.app.dto.Status
 import ru.app.dto.TaskDTO
 import ru.app.dto.setStatus
 import ru.app.exceptions.BadRequestException
+import ru.app.exceptions.PermissionDeniedException
 import ru.app.exceptions.ProjectNotExistsException
 import ru.app.exceptions.StatusNotExistsException
 import ru.app.exceptions.TokenExpiredException
@@ -87,21 +88,21 @@ class TaskController(
     }
 
     @PostMapping("/api/v1/update/task")
-    fun updateTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): Long? {
+    fun updateTask(@RequestParam token: String, @RequestBody taskInfo: TaskDTO): String {
         log.info("POST: /api/v1/update/task")
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
         val project = projectService.getProjectByProjectNameAndCreatorLogin(taskInfo.project_name) ?: throw ProjectNotExistsException()
-        var id: Long? = null;
         if (projectService.hasAccessToProject(me.user_id!!, project.project_id!!)) {
             val worker = if (taskInfo.worker_login != null)
                 userService.getUser(taskInfo.worker_login) ?: throw UserNotFoundException()
                 else me
             val creator = userService.getUser(taskInfo.creator_login!!) ?: throw UserNotFoundException()
-            id = taskService.updateTask(worker, creator, project, taskInfo)
+            taskService.updateTask(worker, creator, project, taskInfo)
+            return "OK"
         }
-        return id
+        throw PermissionDeniedException()
     }
 
     fun Task.toDTO(): TaskDTO {

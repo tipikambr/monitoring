@@ -30,6 +30,32 @@ interface TaskRepository : CrudRepository<Task, String> {
         @Param("progress") progress: String?
     ): Long?
 
+
     @Query("SELECT * FROM task WHERE task_id = :task_id AND user_id = :user_id")
     fun findTask(@Param("user_id") user_id: Long, @Param("task_id") task_id: Long) : Task?
+
+
+//    @Query("UPDATE project SET project_name = :project_name, project_description =
+    //    :project_description, project_creator_id = :project_creator_id
+    //    WHERE project_id = :project_id")
+
+
+    @Modifying
+    @Query("UPDATE task " +
+            "SET creator_id = :creator_id, project_id = :project_id, task_name = :task_name, " +
+            "task_description = :task_description, start_time = :start_time, end_time = :end_time, " +
+            "status = :status, progress = :progress " +
+            "WHERE user_id = :user_id AND task_id = :task_id")
+    fun updateTask(
+        @Param("task_id") taskId: Long,
+        @Param("user_id") user_id: Long,
+        @Param("creator_id") creator_id: Long,
+        @Param("project_id") project_id: Long?,
+        @Param("task_name") task_name: String,
+        @Param("task_description") task_description: String?,
+        @Param("start_time") start_time: Timestamp?,
+        @Param("end_time") end_time: Timestamp?,
+        @Param("status") status: String?,
+        @Param("progress") progress: String?
+    )
 }

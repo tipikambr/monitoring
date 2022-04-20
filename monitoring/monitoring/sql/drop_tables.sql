@@ -5,3 +5,5 @@ drop table projects_users;
 drop table task;
 drop table tokens;
 drop table users;
+drop table geolocation;
+drop table firebase;

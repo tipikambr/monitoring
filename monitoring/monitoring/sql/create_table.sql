@@ -70,4 +70,19 @@ create table projects_users
 (
     user_id    bigint,
     project_id bigint
-)
+);
+
+create table geolocation
+(
+    user_id     bigint,
+    latitude    double precision,
+    longitude   double precision,
+    altitude    double precision,
+    time_update timestamp
+);
+
+create table firebase
+(
+    user_id bigint,
+    token   text
+);
