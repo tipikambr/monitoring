@@ -5,6 +5,7 @@ import ru.app.dto.UserDTO
 import ru.app.exceptions.*
 import ru.app.model.Company
 import ru.app.model.User
+import ru.app.repository.ActivityRepository
 import ru.app.repository.CompanyRepository
 import ru.app.repository.TokenRepository
 import ru.app.repository.UserRepository
@@ -13,7 +14,8 @@ import ru.app.utils.passwordHash
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val companyRepository: CompanyRepository
+    private val companyRepository: CompanyRepository,
+    private val activityRepository: ActivityRepository
 ) {
     fun getUser(login: String): User? = userRepository.getUser(login)
 
@@ -40,6 +42,7 @@ class UserService(
         if (user.boss_id != null && user.boss_id != 0L)
             boss_login = userRepository.getUser(user.boss_id)?.login ?: throw BossNotFoundException()
 
+
         return UserDTO(
             user.user_name,
             user.login,
@@ -47,7 +50,8 @@ class UserService(
             comnany_name,
             user.hours,
             user.permissions,
-            boss_login
+            boss_login,
+            activityRepository.getAll(user.user_id).last().end_time == null
         )
     }
 
@@ -65,7 +69,8 @@ class UserService(
             companyName,
             user.hours,
             user.permissions,
-            bossLogin
+            bossLogin,
+            activityRepository.getAll(user.user_id).last().end_time == null
         )
     }
 
@@ -134,6 +139,7 @@ class UserService(
             var bossLogin: String? = null
             if (it.boss_id != null)
                 bossLogin = userRepository.getUser(it.boss_id)?.login ?: throw BossNotFoundException()
+
             UserDTO(
                 it.user_name,
                 it.login,
@@ -141,7 +147,8 @@ class UserService(
                 comnany_name,
                 it.hours,
                 it.permissions,
-                bossLogin
+                bossLogin,
+                activityRepository.getAll(it.user_id).last().end_time == null
             )
         }
     }
@@ -155,7 +162,8 @@ class UserService(
                 companyRepository.getUserCompanyById(it.company_id!!)?.company_name,
                 it.hours,
                 it.permissions,
-                if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null
+                if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null,
+                activityRepository.getAll(it.user_id).last().end_time == null
             )
         }
     }
@@ -169,7 +177,8 @@ class UserService(
                 companyRepository.getUserCompanyById(it.company_id!!)?.company_name,
                 it.hours,
                 it.permissions,
-                if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null
+                if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null,
+                activityRepository.getAll(it.user_id).last().end_time == null
             )
         }
     }

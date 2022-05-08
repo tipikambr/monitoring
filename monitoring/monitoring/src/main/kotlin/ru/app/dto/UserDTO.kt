@@ -9,5 +9,6 @@ data class UserDTO(
     @JsonProperty("company_name") val company_name: String?,
     @JsonProperty("hours") val hours: Int?,
     @JsonProperty("permissions") val permissions: String?,
-    @JsonProperty("boss_login") val boss_login: String?
+    @JsonProperty("boss_login") val boss_login: String?,
+    @JsonProperty("is_active") val is_active: Boolean
 )

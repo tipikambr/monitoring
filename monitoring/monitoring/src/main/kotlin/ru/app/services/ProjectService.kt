@@ -13,6 +13,7 @@ import ru.app.exceptions.UserFromAnotherCompanyException
 import ru.app.exceptions.UserNotFoundException
 import ru.app.model.Project
 import ru.app.model.User
+import ru.app.repository.ActivityRepository
 import ru.app.repository.CompanyRepository
 import ru.app.repository.ProjectRepository
 import ru.app.repository.UserProjectRepository
@@ -23,7 +24,8 @@ class ProjectService(
     private val projectRepository: ProjectRepository,
     private val userProjectRepository: UserProjectRepository,
     private val userRepository: UserRepository,
-    private val companyRepository: CompanyRepository
+    private val companyRepository: CompanyRepository,
+    private val activityRepository: ActivityRepository
 ) {
 
     fun getProjectById(projectId: Long): Project {
@@ -177,7 +179,8 @@ class ProjectService(
                 companyName,
                 user.hours,
                 user.permissions,
-                bossLogin
+                bossLogin,
+                activityRepository.getAll(user.user_id).last().end_time == null
             )
         }
     }
