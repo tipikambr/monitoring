@@ -42,6 +42,7 @@ class UserService(
         if (user.boss_id != null && user.boss_id != 0L)
             boss_login = userRepository.getUser(user.boss_id)?.login ?: throw BossNotFoundException()
 
+        val lastActivity = activityRepository.getAll(user.user_id).lastOrNull()
 
         return UserDTO(
             user.user_name,
@@ -51,7 +52,7 @@ class UserService(
             user.hours,
             user.permissions,
             boss_login,
-            activityRepository.getAll(user.user_id).last().end_time == null
+            lastActivity != null && lastActivity.end_time == null
         )
     }
 
@@ -62,6 +63,8 @@ class UserService(
         if (user.boss_id != null && user.boss_id != 0L)
             bossLogin = userRepository.getUser(user.boss_id)?.login ?: throw BossNotFoundException()
 
+        val lastActivity = activityRepository.getAll(user.user_id).lastOrNull()
+
         return UserDTO(
             user.user_name,
             user.login,
@@ -70,7 +73,7 @@ class UserService(
             user.hours,
             user.permissions,
             bossLogin,
-            activityRepository.getAll(user.user_id).last().end_time == null
+            lastActivity != null && lastActivity.end_time == null
         )
     }
 
@@ -140,6 +143,8 @@ class UserService(
             if (it.boss_id != null)
                 bossLogin = userRepository.getUser(it.boss_id)?.login ?: throw BossNotFoundException()
 
+            val lastActivity = activityRepository.getAll(it.user_id).lastOrNull()
+
             UserDTO(
                 it.user_name,
                 it.login,
@@ -148,13 +153,15 @@ class UserService(
                 it.hours,
                 it.permissions,
                 bossLogin,
-                activityRepository.getAll(it.user_id).last().end_time == null
+                lastActivity != null && lastActivity.end_time == null
             )
         }
     }
 
     fun getAll(): List<UserDTO> {
         return userRepository.getUsers().map {
+            val lastActivity = activityRepository.getAll(it.user_id).lastOrNull()
+
             UserDTO(
                 it.user_name,
                 it.login,
@@ -163,13 +170,15 @@ class UserService(
                 it.hours,
                 it.permissions,
                 if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null,
-                activityRepository.getAll(it.user_id).last().end_time == null
+                lastActivity != null && lastActivity.end_time == null
             )
         }
     }
 
     fun getUsersByCompany(company_id : Int): List<UserDTO> {
         return userRepository.getUsersByCompany(company_id).map {
+            val lastActivity = activityRepository.getAll(it.user_id).lastOrNull()
+
             UserDTO(
                 it.user_name,
                 it.login,
@@ -178,7 +187,7 @@ class UserService(
                 it.hours,
                 it.permissions,
                 if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null,
-                activityRepository.getAll(it.user_id).last().end_time == null
+                lastActivity != null && lastActivity.end_time == null
             )
         }
     }

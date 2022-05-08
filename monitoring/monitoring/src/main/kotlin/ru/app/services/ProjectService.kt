@@ -172,6 +172,9 @@ class ProjectService(
             val user = userRepository.getUser(it.user_id)
             val companyName = companyRepository.getUserCompanyById(user!!.company_id!!)!!.company_name
             val bossLogin = if (user.boss_id == null || user.boss_id == 0L) null else userRepository.getUser(user.boss_id)!!.login
+
+            val lastActivity = activityRepository.getAll(user.user_id).lastOrNull()
+
             UserDTO(
                 user.user_name,
                 user.login,
@@ -180,7 +183,7 @@ class ProjectService(
                 user.hours,
                 user.permissions,
                 bossLogin,
-                activityRepository.getAll(user.user_id).last().end_time == null
+                lastActivity != null && lastActivity.end_time == null
             )
         }
     }
