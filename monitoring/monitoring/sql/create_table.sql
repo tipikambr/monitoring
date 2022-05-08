@@ -86,3 +86,12 @@ create table firebase
     user_id bigint,
     token   text
 );
+
+create table notifications
+(
+    user_id bigint,
+    notification text,
+    from_login text,
+    when_time timestamp,
+    approved timestamp
+);

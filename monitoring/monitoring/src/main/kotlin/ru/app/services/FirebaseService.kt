@@ -51,6 +51,6 @@ class FirebaseService(
             ).setToken(registerToken)
             .build()
 
-        val a =FirebaseMessaging.getInstance().send(message)
+        val a = FirebaseMessaging.getInstance().send(message)
     }
 }

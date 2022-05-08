@@ -15,8 +15,7 @@ import ru.app.repository.UserRepository
 
 @Service
 class TaskService(
-    private val taskRepository: TaskRepository,
-    private val userRepository: UserRepository
+    private val taskRepository: TaskRepository
 ) {
     fun getTasksById(userId: Long): List<Task> {
         return taskRepository.getAllById(userId)
