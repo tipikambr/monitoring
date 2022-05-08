@@ -7,3 +7,4 @@ drop table if exists tokens;
 drop table if exists users;
 drop table if exists geolocation;
 drop table if exists firebase;
+drop table if exists notifications;
