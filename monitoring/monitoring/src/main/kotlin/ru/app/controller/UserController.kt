@@ -160,22 +160,23 @@ class UserController(
     }
 
     @PostMapping("/api/v1/photo/register")
-    fun savePhoto(@RequestParam token: String, @RequestBody photoDTO: PhotoDTO) {
+    fun savePhoto(@RequestParam token: String, @RequestBody photoDTO: PhotoDTO): String {
         log.info("POST: /api/v1/photo/register")
         val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(myId)
         if (me!!.permissions == "admin" || me.permissions == "manager") {
-            var registeredUser = userService.getUser(photoDTO.userLogin) ?: throw UserNotFoundException()
+            var registeredUser = userService.getUser(photoDTO.login) ?: throw UserNotFoundException()
             photoService.savePhoto(photoDTO.photo, registeredUser)
+            return "OK"
         }
         throw PermissionDeniedException()
     }
 
     @PostMapping("/api/v1/photo/check")
-    fun checkPhoto(@RequestParam token: String, photoDTO: PhotoDTO) {
+    fun checkPhoto(@RequestParam token: String, @RequestBody photoDTO: PhotoDTO): Boolean {
         log.info("POST: /api/v1/photo/check")
         val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(myId)
-        photoService.checkPhoto(photoDTO.photo, me!!)
+        return photoService.checkPhoto(photoDTO.photo, me!!)
     }
 }
