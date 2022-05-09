@@ -1,6 +1,7 @@
 package ru.app.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.sql.Timestamp
 
 data class UserDTO(
     @JsonProperty("user_name") val user_name: String?,
@@ -10,5 +11,6 @@ data class UserDTO(
     @JsonProperty("hours") val hours: Int?,
     @JsonProperty("permissions") val permissions: String?,
     @JsonProperty("boss_login") val boss_login: String?,
-    @JsonProperty("is_active") val is_active: Boolean
+    @JsonProperty("is_active") val is_active: Boolean?,
+    @JsonProperty("last_geolocation") val last_geolocation: Timestamp?
 )

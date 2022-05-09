@@ -15,6 +15,7 @@ import ru.app.model.Project
 import ru.app.model.User
 import ru.app.repository.ActivityRepository
 import ru.app.repository.CompanyRepository
+import ru.app.repository.GeolocationRepository
 import ru.app.repository.ProjectRepository
 import ru.app.repository.UserProjectRepository
 import ru.app.repository.UserRepository
@@ -25,7 +26,8 @@ class ProjectService(
     private val userProjectRepository: UserProjectRepository,
     private val userRepository: UserRepository,
     private val companyRepository: CompanyRepository,
-    private val activityRepository: ActivityRepository
+    private val activityRepository: ActivityRepository,
+    private val geolocationRepository: GeolocationRepository
 ) {
 
     fun getProjectById(projectId: Long): Project {
@@ -174,6 +176,7 @@ class ProjectService(
             val bossLogin = if (user.boss_id == null || user.boss_id == 0L) null else userRepository.getUser(user.boss_id)!!.login
 
             val lastActivity = activityRepository.getAll(user.user_id).lastOrNull()
+            val lastGeolocation = geolocationRepository.getUserGeolocation(user.user_id!!).lastOrNull()?.timeUpdate
 
             UserDTO(
                 user.user_name,
@@ -183,7 +186,8 @@ class ProjectService(
                 user.hours,
                 user.permissions,
                 bossLogin,
-                lastActivity != null && lastActivity.end_time == null
+                lastActivity != null && lastActivity.end_time == null,
+                lastGeolocation
             )
         }
     }

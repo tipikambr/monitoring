@@ -7,6 +7,7 @@ import ru.app.model.Company
 import ru.app.model.User
 import ru.app.repository.ActivityRepository
 import ru.app.repository.CompanyRepository
+import ru.app.repository.GeolocationRepository
 import ru.app.repository.TokenRepository
 import ru.app.repository.UserRepository
 import ru.app.utils.passwordHash
@@ -15,7 +16,8 @@ import ru.app.utils.passwordHash
 class UserService(
     private val userRepository: UserRepository,
     private val companyRepository: CompanyRepository,
-    private val activityRepository: ActivityRepository
+    private val activityRepository: ActivityRepository,
+    private val geolocationRepository: GeolocationRepository
 ) {
     fun getUser(login: String): User? = userRepository.getUser(login)
 
@@ -43,6 +45,7 @@ class UserService(
             boss_login = userRepository.getUser(user.boss_id)?.login ?: throw BossNotFoundException()
 
         val lastActivity = activityRepository.getAll(user.user_id).lastOrNull()
+        val lastGeolocation = geolocationRepository.getUserGeolocation(user.user_id!!).lastOrNull()?.timeUpdate
 
         return UserDTO(
             user.user_name,
@@ -52,7 +55,8 @@ class UserService(
             user.hours,
             user.permissions,
             boss_login,
-            lastActivity != null && lastActivity.end_time == null
+            lastActivity != null && lastActivity.end_time == null,
+            lastGeolocation
         )
     }
 
@@ -64,6 +68,7 @@ class UserService(
             bossLogin = userRepository.getUser(user.boss_id)?.login ?: throw BossNotFoundException()
 
         val lastActivity = activityRepository.getAll(user.user_id).lastOrNull()
+        val lastGeolocation = geolocationRepository.getUserGeolocation(user.user_id!!).lastOrNull()?.timeUpdate
 
         return UserDTO(
             user.user_name,
@@ -73,7 +78,8 @@ class UserService(
             user.hours,
             user.permissions,
             bossLogin,
-            lastActivity != null && lastActivity.end_time == null
+            lastActivity != null && lastActivity.end_time == null,
+            lastGeolocation
         )
     }
 
@@ -144,6 +150,7 @@ class UserService(
                 bossLogin = userRepository.getUser(it.boss_id)?.login ?: throw BossNotFoundException()
 
             val lastActivity = activityRepository.getAll(it.user_id).lastOrNull()
+            val lastGeolocation = geolocationRepository.getUserGeolocation(it.user_id!!).lastOrNull()?.timeUpdate
 
             UserDTO(
                 it.user_name,
@@ -153,7 +160,8 @@ class UserService(
                 it.hours,
                 it.permissions,
                 bossLogin,
-                lastActivity != null && lastActivity.end_time == null
+                lastActivity != null && lastActivity.end_time == null,
+                lastGeolocation
             )
         }
     }
@@ -161,6 +169,7 @@ class UserService(
     fun getAll(): List<UserDTO> {
         return userRepository.getUsers().map {
             val lastActivity = activityRepository.getAll(it.user_id).lastOrNull()
+            val lastGeolocation = geolocationRepository.getUserGeolocation(it.user_id!!).lastOrNull()?.timeUpdate
 
             UserDTO(
                 it.user_name,
@@ -170,7 +179,8 @@ class UserService(
                 it.hours,
                 it.permissions,
                 if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null,
-                lastActivity != null && lastActivity.end_time == null
+                lastActivity != null && lastActivity.end_time == null,
+                lastGeolocation
             )
         }
     }
@@ -178,6 +188,7 @@ class UserService(
     fun getUsersByCompany(company_id : Int): List<UserDTO> {
         return userRepository.getUsersByCompany(company_id).map {
             val lastActivity = activityRepository.getAll(it.user_id).lastOrNull()
+            val lastGeolocation = geolocationRepository.getUserGeolocation(it.user_id!!).lastOrNull()?.timeUpdate
 
             UserDTO(
                 it.user_name,
@@ -187,7 +198,8 @@ class UserService(
                 it.hours,
                 it.permissions,
                 if (it.boss_id != null) userRepository.getUser(it.boss_id)?.login else null,
-                lastActivity != null && lastActivity.end_time == null
+                lastActivity != null && lastActivity.end_time == null,
+                lastGeolocation
             )
         }
     }
