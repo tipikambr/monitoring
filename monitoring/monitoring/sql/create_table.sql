@@ -8,6 +8,7 @@ create table users
     hours       integer,
     permissions text,
     boss_id     bigint,
+    luxand_cloud_id bigint,
     PRIMARY KEY (user_id)
 );
 

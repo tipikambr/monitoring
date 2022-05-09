@@ -10,7 +10,8 @@ import org.springframework.data.relational.core.mapping.Table
     "user_id",
     "password",
     "company_id",
-    "boss_id"
+    "boss_id",
+    "luxand_cloud_id"
 )
 data class User(
     @Id @JsonProperty("user_id") val user_id: Long?,
@@ -20,8 +21,9 @@ data class User(
     @JsonProperty("company_id") val company_id: Int?,
     @JsonProperty("hours") val hours: Int?,
     @JsonProperty("permissions") val permissions: String?,
-    @JsonProperty("boss_id") val boss_id: Long?
+    @JsonProperty("boss_id") val boss_id: Long?,
+    @JsonProperty("luxand_cloud_id") val luxand_cloud_id: Long?
 ){
-    constructor(user_name: String?, login: String, password: String, company_id: Int?, hours: Int?, permissions: String?, boss_id: Long?)
-            : this(null, user_name, login, password, company_id, hours, permissions, boss_id)
+    constructor(user_name: String?, login: String, password: String, company_id: Int?, hours: Int?, permissions: String?, boss_id: Long?, luxand_cloud_id: Long?)
+            : this(null, user_name, login, password, company_id, hours, permissions, boss_id, luxand_cloud_id)
 }

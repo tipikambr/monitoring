@@ -104,7 +104,8 @@ class UserService(
             companyId,
             userDTO.hours,
             userDTO.permissions,
-            bossId
+            bossId,
+            null
         )
         userRepository.save(userDB)
 
@@ -130,7 +131,8 @@ class UserService(
             user.company_id!!,
             user.hours,
             user.permissions!!,
-            user.boss_id
+            user.boss_id,
+            user.luxand_cloud_id
         )
     }
 

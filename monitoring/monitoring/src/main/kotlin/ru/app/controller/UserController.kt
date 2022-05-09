@@ -2,11 +2,13 @@ package ru.app.controller
 
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.*
+import ru.app.dto.PhotoDTO
 import ru.app.dto.UserDTO
 import ru.app.exceptions.*
 import ru.app.model.Company
 import ru.app.model.Token
 import ru.app.model.User
+import ru.app.services.PhotoService
 import ru.app.services.TokenService
 import ru.app.services.UserService
 import ru.app.utils.passwordHash
@@ -15,6 +17,7 @@ import ru.app.utils.passwordHash
 class UserController(
     private val userService: UserService,
     private val tokenService: TokenService,
+    private val photoService: PhotoService
 ) {
     private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -124,7 +127,8 @@ class UserController(
                     if (user.company_name != null) userService.getCompanyByName(user.company_name).company_id else interest.company_id,
                     user.hours ?: interest.hours,
                     user.permissions ?: interest.permissions,
-                    if (user.boss_login != null) userService.getUser(user.boss_login)!!.user_id else interest.boss_id
+                    if (user.boss_login != null) userService.getUser(user.boss_login)!!.user_id else interest.boss_id,
+                    interest.luxand_cloud_id
                 )
             )
             return "OK"
@@ -153,5 +157,25 @@ class UserController(
             return userService.getWorkers(interest.user_id!!)
         }
         throw PermissionDeniedException()
+    }
+
+    @PostMapping("/api/v1/photo/register")
+    fun savePhoto(@RequestParam token: String, @RequestBody photoDTO: PhotoDTO) {
+        log.info("POST: /api/v1/photo/register")
+        val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(myId)
+        if (me!!.permissions == "admin" || me.permissions == "manager") {
+            var registeredUser = userService.getUser(photoDTO.userLogin) ?: throw UserNotFoundException()
+            photoService.savePhoto(photoDTO.photo, registeredUser)
+        }
+        throw PermissionDeniedException()
+    }
+
+    @PostMapping("/api/v1/photo/check")
+    fun checkPhoto(@RequestParam token: String, photoDTO: PhotoDTO) {
+        log.info("POST: /api/v1/photo/check")
+        val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(myId)
+        photoService.checkPhoto(photoDTO.photo, me!!)
     }
 }

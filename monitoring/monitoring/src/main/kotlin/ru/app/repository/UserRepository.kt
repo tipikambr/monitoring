@@ -33,7 +33,8 @@ interface UserRepository : CrudRepository<User, String> {
         @Param("company_id") company_id: Int,
         @Param("hours") hours: Int?,
         @Param("permissions") permissions: String,
-        @Param("boss_id") boss_id: Long?
+        @Param("boss_id") boss_id: Long?,
+        @Param("luxand_cloud_id") luxand_cloud_id: Long?
     )
 
     @Query("SELECT * FROM users WHERE boss_id = :user_id")
