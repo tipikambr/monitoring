@@ -26,9 +26,9 @@ VALUES
     (3, 'test1', 'test', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 1, 8, 'admin', 1),
     (4, 'test1', 'test1', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 1, 8, 'user', 3),
     (5, 'test2', 'test2', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 1, 8, 'user', 4),
-    (6, 'test3', 'test3', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 2),
-    (7, 'test4', 'test4', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 6),
-    (8, 'test5', 'test5', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'suer', 7);
+    (6, 'test3', 'test3', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'user', 2),
+    (7, 'test4', 'test4', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'user', 6),
+    (8, 'test5', 'test5', 'D8578EDF8458CE06FBC5BB76A58C5CA4', 2, 8, 'user', 7);
 
 SELECT pg_catalog.setval(pg_get_serial_sequence('users', 'user_id'), (SELECT MAX(user_id) FROM users)+1);
 

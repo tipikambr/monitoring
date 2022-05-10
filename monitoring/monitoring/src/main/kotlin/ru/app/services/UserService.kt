@@ -132,7 +132,8 @@ class UserService(
             user.hours,
             user.permissions!!,
             user.boss_id,
-            user.luxand_cloud_id
+            user.luxand_cloud_id,
+            user.photo
         )
     }
 
@@ -206,4 +207,18 @@ class UserService(
         }
     }
 
+    fun savePhoto(photo: String, user: User) {
+        userRepository.updateUser(
+            user.user_id!!,
+            user.user_name!!,
+            user.login,
+            user.password,
+            user.company_id!!,
+            user.hours,
+            user.permissions!!,
+            user.boss_id,
+            user.luxand_cloud_id,
+            photo
+        )
+    }
 }

@@ -22,8 +22,9 @@ data class User(
     @JsonProperty("hours") val hours: Int?,
     @JsonProperty("permissions") val permissions: String?,
     @JsonProperty("boss_id") val boss_id: Long?,
-    @JsonProperty("luxand_cloud_id") val luxand_cloud_id: Long?
+    @JsonProperty("luxand_cloud_id") val luxand_cloud_id: Long?,
+    @JsonProperty("photo") val photo: String?
 ){
     constructor(user_name: String?, login: String, password: String, company_id: Int?, hours: Int?, permissions: String?, boss_id: Long?, luxand_cloud_id: Long?)
-            : this(null, user_name, login, password, company_id, hours, permissions, boss_id, luxand_cloud_id)
+            : this(null, user_name, login, password, company_id, hours, permissions, boss_id, luxand_cloud_id, null)
 }

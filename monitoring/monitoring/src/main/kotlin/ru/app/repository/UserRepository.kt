@@ -24,7 +24,7 @@ interface UserRepository : CrudRepository<User, String> {
     fun hasWorkers(@Param("boss_id") id: Long): Int
 
     @Modifying
-    @Query("UPDATE users SET user_name = :user_name, login = :login, password = :password, company_id = :company_id, hours = :hours, permissions = :permissions, boss_id = :boss_id WHERE user_id = :user_id")
+    @Query("UPDATE users SET user_name = :user_name, login = :login, password = :password, company_id = :company_id, hours = :hours, permissions = :permissions, boss_id = :boss_id, luxand_cloud_id = :luxand_cloud_id, photo = :photo WHERE user_id = :user_id")
     fun updateUser(
         @Param("user_id") user_id : Long,
         @Param("user_name") user_name: String,
@@ -34,7 +34,8 @@ interface UserRepository : CrudRepository<User, String> {
         @Param("hours") hours: Int?,
         @Param("permissions") permissions: String,
         @Param("boss_id") boss_id: Long?,
-        @Param("luxand_cloud_id") luxand_cloud_id: Long?
+        @Param("luxand_cloud_id") luxand_cloud_id: Long?,
+        @Param("photo") photo: String?
     )
 
     @Query("SELECT * FROM users WHERE boss_id = :user_id")

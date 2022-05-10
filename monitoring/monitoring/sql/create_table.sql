@@ -9,6 +9,7 @@ create table users
     permissions text,
     boss_id     bigint,
     luxand_cloud_id bigint,
+    photo text,
     PRIMARY KEY (user_id)
 );
 

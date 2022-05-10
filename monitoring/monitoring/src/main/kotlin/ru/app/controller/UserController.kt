@@ -128,7 +128,8 @@ class UserController(
                     user.hours ?: interest.hours,
                     user.permissions ?: interest.permissions,
                     if (user.boss_login != null) userService.getUser(user.boss_login)!!.user_id else interest.boss_id,
-                    interest.luxand_cloud_id
+                    interest.luxand_cloud_id,
+                    interest.photo
                 )
             )
             return "OK"
@@ -166,6 +167,7 @@ class UserController(
         val me = userService.getUser(myId)
         if (me!!.permissions == "admin" || me.permissions == "manager") {
             var registeredUser = userService.getUser(photoDTO.login) ?: throw UserNotFoundException()
+            userService.savePhoto(photoDTO.photo, registeredUser)
             photoService.savePhoto(photoDTO.photo, registeredUser)
             return "OK"
         }
@@ -178,5 +180,18 @@ class UserController(
         val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(myId)
         return photoService.checkPhoto(photoDTO.photo, me!!)
+    }
+
+    @PostMapping("/api/v1/user/photo")
+    fun getPhoto(@RequestParam token: String, @RequestBody user: UserDTO): String {
+        log.info("POST: /api/v1/info")
+        val myId = tokenService.checkToken(token) ?: throw TokenExpiredException()
+        val me = userService.getUser(myId)
+        val interest = userService.getUser(user.login!!)
+        if (me!!.permissions == "admin" || (interest != null && me.company_id == interest.company_id)){
+            if (interest == null) throw UserNotFoundException()
+            return interest.photo ?: "NO PHOTO"
+        }
+        throw PermissionDeniedException()
     }
 }

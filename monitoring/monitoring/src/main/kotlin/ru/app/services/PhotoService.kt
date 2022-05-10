@@ -38,7 +38,8 @@ class PhotoService(
             user.hours,
             user.permissions!!,
             user.boss_id,
-            personId.toLong()
+            personId.toLong(),
+            photo
         )
 
         body = hashMapOf<String?, Any?>("photo" to photo)
