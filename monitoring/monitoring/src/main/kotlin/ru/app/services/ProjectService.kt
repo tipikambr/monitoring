@@ -81,7 +81,9 @@ class ProjectService(
             ?: throw ProjectNotExistsException()
 
         //Новый создатель проекта (главный), если не меняется, то он равен null
-        val newCreator = if (project.project_creator_login != null) userRepository.getUser(project.project_creator_login) else null
+        val newCreator = if (project.project_creator_login != null &&
+            project.old_project_creator_login != project.project_creator_login)
+                userRepository.getUser(project.project_creator_login) else null
 
         //Если новый создатель проекта из другой компании, то ошибка
         if (newCreator != null && newCreator.company_id != user.company_id)
