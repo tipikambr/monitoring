@@ -91,6 +91,7 @@ create table firebase
 
 create table notifications
 (
+    notification_id BIGINT,
     user_id bigint,
     notification text,
     from_login text,
