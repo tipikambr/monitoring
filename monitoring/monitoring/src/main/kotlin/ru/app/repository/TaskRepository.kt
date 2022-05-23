@@ -42,10 +42,10 @@ interface TaskRepository : CrudRepository<Task, String> {
 
     @Modifying
     @Query("UPDATE task " +
-            "SET creator_id = :creator_id, project_id = :project_id, task_name = :task_name, " +
+            "SET user_id = :user_id, project_id = :project_id, task_name = :task_name, " +
             "task_description = :task_description, start_time = :start_time, end_time = :end_time, " +
             "status = :status, progress = :progress " +
-            "WHERE user_id = :user_id AND task_id = :task_id")
+            "WHERE creator_id = :creator_id AND task_id = :task_id")
     fun updateTask(
         @Param("task_id") taskId: Long,
         @Param("user_id") user_id: Long,
