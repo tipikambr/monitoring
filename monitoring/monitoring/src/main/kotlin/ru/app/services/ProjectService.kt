@@ -17,6 +17,7 @@ import ru.app.repository.ActivityRepository
 import ru.app.repository.CompanyRepository
 import ru.app.repository.GeolocationRepository
 import ru.app.repository.ProjectRepository
+import ru.app.repository.TaskRepository
 import ru.app.repository.UserProjectRepository
 import ru.app.repository.UserRepository
 
@@ -27,7 +28,8 @@ class ProjectService(
     private val userRepository: UserRepository,
     private val companyRepository: CompanyRepository,
     private val activityRepository: ActivityRepository,
-    private val geolocationRepository: GeolocationRepository
+    private val geolocationRepository: GeolocationRepository,
+    private val taskRepository: TaskRepository
 ) {
 
     fun getProjectById(projectId: Long): Project {
@@ -126,10 +128,12 @@ class ProjectService(
         //Удаление проекта, если в проекте всего один человек, удаляется без проблем, если больше -- то нужен параметр hard delete.
         if (userProjectRepository.getProjectUsers(interest!!.project_id!!).size <= 1) {
             userProjectRepository.deleteByProjectId(interest.project_id!!)
+            taskRepository.deleteByPtojectId(interest.project_id!!)
             projectRepository.delete(interest!!)
         } else {
             if (soft) throw ProjectContainsWorkersException()
             userProjectRepository.deleteByProjectId(interest.project_id!!)
+            taskRepository.deleteByPtojectId(interest.project_id!!)
             projectRepository.delete(interest!!)
         }
     }

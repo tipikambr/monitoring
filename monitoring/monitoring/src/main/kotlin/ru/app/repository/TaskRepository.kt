@@ -58,4 +58,9 @@ interface TaskRepository : CrudRepository<Task, String> {
         @Param("status") status: String?,
         @Param("progress") progress: String?
     )
+
+    @Modifying
+    @Query("DELETE FROM task " +
+            "WHERE project_id = :project_id")
+    fun deleteByPtojectId(  @Param("project_id") project_id: Long)
 }
