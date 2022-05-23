@@ -42,7 +42,6 @@ class ProjectController(
 
         val userId = tokenService.checkToken(token) ?: throw TokenExpiredException()
         val me = userService.getUser(userId)!!
-        if (me.permissions != "admin") throw PermissionDeniedException()
 
         return projectService.getMyProjects(me)
     }
