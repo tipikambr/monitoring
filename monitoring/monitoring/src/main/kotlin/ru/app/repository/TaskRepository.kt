@@ -31,7 +31,7 @@ interface TaskRepository : CrudRepository<Task, String> {
     ): Long?
 
 
-    @Query("SELECT * FROM task WHERE task_id = :task_id AND user_id = :user_id")
+    @Query("SELECT * FROM task WHERE task_id = :task_id AND creator_id = :user_id")
     fun findTask(@Param("user_id") user_id: Long, @Param("task_id") task_id: Long) : Task?
 
 
